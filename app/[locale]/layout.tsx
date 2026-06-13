@@ -1,0 +1,100 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { routing, localeDirection, type Locale } from '@/i18n/routing';
+import { fontVariables } from '@/lib/fonts';
+import { Header } from '@/components/sections/Header';
+import { Footer } from '@/components/sections/Footer';
+import { Loader } from '@/components/motion/Loader';
+import { ScrollProgress } from '@/components/motion/ScrollProgress';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { ChromeGate } from '@/components/sections/ChromeGate';
+import '../globals.css';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kambizakhbari.com';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Meta' });
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: t('defaultTitle'),
+      template: `%s · ${t('siteName')}`,
+    },
+    description: t('defaultDescription'),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        en: '/en',
+        fa: '/fa',
+        'x-default': '/en',
+      },
+    },
+    openGraph: {
+      type: 'website',
+      siteName: t('siteName'),
+      title: t('defaultTitle'),
+      description: t('defaultDescription'),
+      locale: locale === 'fa' ? 'fa_IR' : 'en_US',
+      url: `/${locale}`,
+      images: [{ url: '/og.jpg', width: 1200, height: 630, alt: t('ogAlt') }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('defaultTitle'),
+      description: t('defaultDescription'),
+      images: ['/og.jpg'],
+    },
+  };
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  setRequestLocale(locale);
+
+  const dir = localeDirection[locale as Locale];
+
+  return (
+    <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>
+      <body className="min-h-screen bg-bone antialiased">
+        <NextIntlClientProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[80] focus:rounded-plate focus:bg-ink focus:px-4 focus:py-2 focus:text-bone"
+          >
+            Skip to content
+          </a>
+          <Loader />
+          <ScrollProgress />
+          <Header />
+          <main id="main">
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <ChromeGate>
+            <Footer />
+          </ChromeGate>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}

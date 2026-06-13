@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   Design tokens: Architectural LEGO
+   Restrained, premium palette. Color appears in small, deliberate amounts.
+   =========================================================================== */
+@layer base {
+  :root {
+    /* Core palette, expressed as raw RGB channels for Tailwind alpha support. */
+    --color-ink: 18 18 19; /* deep near-black */
+    --color-bone: 244 241 234; /* warm off-white */
+    --color-brick: 178 58 47; /* single, slightly desaturated brick-red */
+    --color-graphite: 88 90 94; /* secondary neutral */
+    --color-seam: 214 209 199; /* hairline seams between plates */
+    --color-plate: 252 250 246; /* clean reading surface */
+
+    /* Brick grid unit. Everything snaps to multiples of this. */
+    --brick-unit: 0.5rem;
+    --plate-radius: 14px;
+
+    /* Default to the light, bone reading environment. */
+    --bg: var(--color-bone);
+    --fg: var(--color-ink);
+  }
+
+  * {
+    border-color: rgb(var(--color-seam));
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+    font-family: var(--font-sans), var(--font-fa), system-ui, sans-serif;
+    font-feature-settings: 'kern', 'liga', 'calt';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Persian locale tunes line-height and weight for comfortable reading. */
+  [lang='fa'] body,
+  [dir='rtl'] {
+    font-family: var(--font-fa), system-ui, sans-serif;
+  }
+
+  [dir='rtl'] {
+    line-height: 1.85;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), var(--font-fa), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+
+  /* Persian headings use Vazirmatn, which has no tight Latin tracking needs. */
+  [dir='rtl'] h1,
+  [dir='rtl'] h2,
+  [dir='rtl'] h3,
+  [dir='rtl'] h4 {
+    font-family: var(--font-fa), system-ui, sans-serif;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+
+  ::selection {
+    background-color: rgb(var(--color-brick) / 0.92);
+    color: rgb(var(--color-bone));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-brick));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* ===========================================================================
+   Brick language components
+   =========================================================================== */
+@layer components {
+  /* A clean reading plate: flat surface, generous padding, strong contrast. */
+  .plate {
+    background-color: rgb(var(--color-plate));
+    border-radius: var(--plate-radius);
+    box-shadow: var(--tw-shadow, 0 1px 0 0 rgb(var(--color-ink) / 0.04),
+        0 2px 6px -2px rgb(var(--color-ink) / 0.12));
+  }
+
+  /* Ink plate for dark sections, photography frames, and the hero. */
+  .plate-ink {
+    background-color: rgb(var(--color-ink));
+    color: rgb(var(--color-bone));
+    border-radius: var(--plate-radius);
+  }
+
+  /* Seam: the hairline groove where two brick plates meet. */
+  .seam {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(var(--color-seam)) 12%,
+      rgb(var(--color-seam)) 88%,
+      transparent
+    );
+  }
+
+  /*
+   * Stud: the small circle on a brick. Used only as refined accents:
+   * seams, list markers, the loader, hover dots. Never as noisy background.
+   */
+  .stud {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: rgb(var(--color-brick));
+    box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.25),
+      0 1px 1px rgb(var(--color-ink) / 0.15);
+  }
+
+  .stud-muted {
+    background-color: rgb(var(--color-graphite) / 0.55);
+  }
+
+  /* A row of stud markers used as a tasteful divider between plates. */
+  .stud-seam {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Constrain body copy to a comfortable measure. */
+  .measure {
+    max-width: 68ch;
+  }
+
+  /* Page shell with brick-aligned gutters. */
+  .shell {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 80rem;
+    padding-inline: clamp(1.25rem, 5vw, 4rem);
+  }
+
+  /*
+   * Editorial body copy. Logical properties keep RTL correct without any
+   * hardcoded left/right values.
+   */
+  .prose-body {
+    line-height: 1.75;
+    color: rgb(var(--color-ink) / 0.86);
+  }
+
+  .prose-body p + p {
+    margin-block-start: 1.25em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Faint engraved brick grid used only in margins and seams, never behind text. */
+  .brick-grid-bg {
+    background-image: linear-gradient(
+        to right,
+        rgb(var(--color-seam) / 0.5) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgb(var(--color-seam) / 0.5) 1px, transparent 1px);
+    background-size: calc(var(--brick-unit) * 6) calc(var(--brick-unit) * 3);
+  }
+}
+
+/* ===========================================================================
+   Reduced motion: calm, static fallback. No transforms, no transitions.
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

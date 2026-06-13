@@ -1,0 +1,235 @@
+'use client';
+
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { createClient } from '@/lib/supabase/client';
+import { uploadImage } from '@/lib/storage';
+import type { ClassRow, ClassType } from '@/lib/types';
+import { Button } from '@/components/ui/Button';
+import { Field, Input, Label, Select, Textarea } from '@/components/ui/Field';
+import { PlusIcon } from '@/components/ui/Icons';
+import { clsx } from '@/lib/clsx';
+
+type Draft = Partial<ClassRow> & { type: ClassType };
+
+const emptyDraft: Draft = {
+  title_en: '',
+  title_fa: '',
+  description_en: '',
+  description_fa: '',
+  type: 'online',
+  price: null,
+  currency: 'TRY',
+  capacity: null,
+  image_url: null,
+  active: true,
+};
+
+export function ClassManager({ initial }: { initial: ClassRow[] }) {
+  const t = useTranslations('Admin.classes');
+  const [rows, setRows] = useState<ClassRow[]>(initial);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const [saving, setSaving] = useState(false);
+  const supabase = createClient();
+
+  async function refresh() {
+    const { data } = await supabase
+      .from('classes')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setRows(data as ClassRow[]);
+  }
+
+  async function save(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!draft) return;
+    setSaving(true);
+    try {
+      const form = new FormData(e.currentTarget);
+      let imageUrl = draft.image_url ?? null;
+      const file = form.get('image') as File | null;
+      if (file && file.size > 0) {
+        imageUrl = await uploadImage(supabase, file, 'classes');
+      }
+
+      const payload = {
+        title_en: String(form.get('title_en') ?? ''),
+        title_fa: String(form.get('title_fa') ?? ''),
+        description_en: String(form.get('description_en') ?? ''),
+        description_fa: String(form.get('description_fa') ?? ''),
+        type: String(form.get('type') ?? 'online') as ClassType,
+        price: form.get('price') ? Number(form.get('price')) : null,
+        currency: String(form.get('currency') ?? 'TRY'),
+        capacity: form.get('capacity') ? Number(form.get('capacity')) : null,
+        image_url: imageUrl,
+        active: form.get('active') === 'on',
+      };
+
+      if (draft.id) {
+        await supabase.from('classes').update(payload).eq('id', draft.id);
+      } else {
+        await supabase.from('classes').insert(payload);
+      }
+      await refresh();
+      setDraft(null);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggleActive(row: ClassRow) {
+    await supabase.from('classes').update({ active: !row.active }).eq('id', row.id);
+    await refresh();
+  }
+
+  async function remove(row: ClassRow) {
+    if (!confirm(t('confirmDelete'))) return;
+    await supabase.from('classes').delete().eq('id', row.id);
+    await refresh();
+  }
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold tracking-tightest text-ink">{t('title')}</h1>
+        <Button onClick={() => setDraft({ ...emptyDraft })} withArrow={false}>
+          <PlusIcon className="h-4 w-4" /> {t('new')}
+        </Button>
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="rounded-plate border border-dashed border-seam bg-plate p-10 text-center text-ink/55">
+          {t('empty')}
+        </p>
+      ) : (
+        <ul className="space-y-3">
+          {rows.map((row) => (
+            <li
+              key={row.id}
+              className="flex flex-wrap items-center gap-4 rounded-plate bg-plate p-4 shadow-snap"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-ink">{row.title_en}</p>
+                <p className="truncate text-sm text-ink/55" dir="rtl">{row.title_fa}</p>
+              </div>
+              <span className="rounded-full bg-ink/5 px-2.5 py-1 text-xs text-ink/70">
+                {row.type === 'online' ? 'online' : 'in person'}
+              </span>
+              <button
+                onClick={() => toggleActive(row)}
+                className={clsx(
+                  'rounded-full px-2.5 py-1 text-xs font-medium',
+                  row.active ? 'bg-brick/10 text-brick' : 'bg-ink/5 text-ink/50',
+                )}
+              >
+                {row.active ? t('active') : '—'}
+              </button>
+              <div className="flex gap-2">
+                <button onClick={() => setDraft({ ...row })}
+                  className="rounded-full border border-seam px-3 py-1 text-sm hover:bg-ink hover:text-bone">
+                  {t('edit')}
+                </button>
+                <button onClick={() => remove(row)}
+                  className="rounded-full border border-brick/40 px-3 py-1 text-sm text-brick hover:bg-brick hover:text-bone">
+                  {t('delete')}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {draft && (
+        <Editor
+          draft={draft}
+          saving={saving}
+          onClose={() => setDraft(null)}
+          onSubmit={save}
+        />
+      )}
+    </div>
+  );
+}
+
+function Editor({
+  draft,
+  saving,
+  onClose,
+  onSubmit,
+}: {
+  draft: Draft;
+  saving: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}) {
+  const t = useTranslations('Admin.classes');
+  const tc = useTranslations('Common');
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/70 p-4">
+      <form
+        onSubmit={onSubmit}
+        className="my-8 w-full max-w-2xl rounded-plate bg-bone p-6 shadow-snap-lg"
+      >
+        <h2 className="text-xl font-semibold tracking-tightest text-ink">
+          {draft.id ? t('edit') : t('new')}
+        </h2>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <Field>
+            <Label htmlFor="title_en">{t('titleEn')}</Label>
+            <Input id="title_en" name="title_en" defaultValue={draft.title_en} dir="ltr" required />
+          </Field>
+          <Field>
+            <Label htmlFor="title_fa">{t('titleFa')}</Label>
+            <Input id="title_fa" name="title_fa" defaultValue={draft.title_fa} dir="rtl" required />
+          </Field>
+          <Field className="sm:col-span-2">
+            <Label htmlFor="description_en">{t('descEn')}</Label>
+            <Textarea id="description_en" name="description_en" defaultValue={draft.description_en} dir="ltr" />
+          </Field>
+          <Field className="sm:col-span-2">
+            <Label htmlFor="description_fa">{t('descFa')}</Label>
+            <Textarea id="description_fa" name="description_fa" defaultValue={draft.description_fa} dir="rtl" />
+          </Field>
+          <Field>
+            <Label htmlFor="type">{t('type')}</Label>
+            <Select id="type" name="type" defaultValue={draft.type}>
+              <option value="online">online</option>
+              <option value="in_person">in person, private</option>
+            </Select>
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field>
+              <Label htmlFor="price">{t('price')}</Label>
+              <Input id="price" name="price" type="number" min="0" defaultValue={draft.price ?? ''} dir="ltr" />
+            </Field>
+            <Field>
+              <Label htmlFor="currency">{t('currency')}</Label>
+              <Input id="currency" name="currency" defaultValue={draft.currency ?? 'TRY'} dir="ltr" />
+            </Field>
+          </div>
+          <Field>
+            <Label htmlFor="capacity">{t('capacity')}</Label>
+            <Input id="capacity" name="capacity" type="number" min="0" defaultValue={draft.capacity ?? ''} dir="ltr" />
+          </Field>
+          <Field>
+            <Label htmlFor="image">{t('image')}</Label>
+            <Input id="image" name="image" type="file" accept="image/*" />
+          </Field>
+          <label className="flex items-center gap-2 sm:col-span-2">
+            <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
+            <span className="text-sm text-ink">{t('active')}</span>
+          </label>
+        </div>
+        <div className="mt-6 flex justify-end gap-3">
+          <button type="button" onClick={onClose}
+            className="rounded-full border border-seam px-4 py-2 text-sm">
+            {tc('close')}
+          </button>
+          <Button type="submit" disabled={saving}>
+            {saving ? t('saving') : t('save')}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}

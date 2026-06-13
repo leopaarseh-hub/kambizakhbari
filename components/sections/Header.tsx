@@ -1,0 +1,133 @@
+'use client';
+
+import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Link, usePathname } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
+import { clsx } from '@/lib/clsx';
+import { CloseIcon, MenuIcon } from '@/components/ui/Icons';
+import { Wordmark } from '@/components/ui/Wordmark';
+
+const navItems = [
+  { href: '/', key: 'home' },
+  { href: '/about', key: 'about' },
+  { href: '/work', key: 'work' },
+  { href: '/classes', key: 'classes' },
+  { href: '/events', key: 'events' },
+  { href: '/contact', key: 'contact' },
+] as const;
+
+function LocaleSwitch() {
+  const t = useTranslations('Nav');
+  const locale = useLocale() as Locale;
+  const pathname = usePathname();
+  const next: Locale = locale === 'en' ? 'fa' : 'en';
+
+  return (
+    <Link
+      href={pathname}
+      locale={next}
+      aria-label={t('languageLabel')}
+      className="rounded-full border border-seam px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ink hover:bg-ink hover:text-bone"
+    >
+      {next === 'fa' ? t('switchToFa') : t('switchToEn')}
+    </Link>
+  );
+}
+
+export function Header() {
+  const t = useTranslations('Nav');
+  const tMeta = useTranslations('Meta');
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
+
+  // The admin panel carries its own chrome, so the public header steps aside.
+  if (pathname.startsWith('/admin')) return null;
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-seam/70 bg-bone/85 backdrop-blur-md">
+      <div className="shell flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="Kambiz Akhbari">
+          <Wordmark className="h-7 w-auto text-ink" name={tMeta('siteName')} />
+        </Link>
+
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              className={clsx(
+                'relative rounded-full px-3.5 py-2 text-sm transition-colors',
+                isActive(item.href)
+                  ? 'text-ink'
+                  : 'text-ink/60 hover:text-ink',
+              )}
+            >
+              {isActive(item.href) && (
+                <span className="absolute start-3 bottom-1 h-1 w-1 rounded-full bg-brick" />
+              )}
+              {t(item.key)}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <LocaleSwitch />
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={open ? t('close') : t('menu')}
+            className="grid h-10 w-10 place-items-center rounded-full border border-seam text-ink md:hidden"
+          >
+            {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            aria-label="Mobile"
+            initial={reduce ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={reduce ? undefined : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
+            className="overflow-hidden border-t border-seam/70 bg-bone md:hidden"
+          >
+            <ul className="shell flex flex-col py-3">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={clsx(
+                      'flex items-center gap-3 rounded-[10px] px-3 py-3 text-base',
+                      isActive(item.href)
+                        ? 'bg-ink/5 text-ink'
+                        : 'text-ink/70',
+                    )}
+                  >
+                    <span
+                      className={clsx(
+                        'h-2 w-2 rounded-full',
+                        isActive(item.href) ? 'bg-brick' : 'bg-graphite/40',
+                      )}
+                    />
+                    {t(item.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
