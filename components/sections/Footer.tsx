@@ -3,6 +3,7 @@ import { Link } from '@/i18n/navigation';
 import { InstagramIcon, MailIcon } from '@/components/ui/Icons';
 import { BrickMark } from '@/components/ui/Wordmark';
 import { StudSeam } from '@/components/ui/Stud';
+import { LegoScene } from '@/components/motion/LegoScene';
 
 const navItems = [
   { href: '/about', key: 'about' },
@@ -22,8 +23,14 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 border-t border-seam bg-ink text-bone">
-      <div className="shell py-16">
+    <footer className="relative mt-24 overflow-hidden border-t border-seam bg-ink text-bone">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 end-0 hidden w-1/3 opacity-80 md:block"
+      >
+        <LegoScene variant="ambient" />
+      </div>
+      <div className="shell relative z-10 py-16">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2.5">
