@@ -27,7 +27,7 @@ export function ClassList({ classes, payment, contactEmail }: Props) {
   if (classes.length === 0) {
     return (
       <div className="rounded-plate border border-dashed border-seam bg-plate p-12 text-center">
-        <p className="text-ink/60">{t('empty')}</p>
+        <p className="text-bone/60">{t('empty')}</p>
       </div>
     );
   }
@@ -101,24 +101,24 @@ function ClassCard({
         </div>
 
         <div className="flex flex-1 flex-col p-6">
-          <h3 className="text-xl font-semibold tracking-tightest text-ink">
+          <h3 className="text-xl font-semibold tracking-tightest text-bone">
             {title}
           </h3>
-          <p className="prose-body mt-2 line-clamp-4 text-ink/70">{description}</p>
+          <p className="prose-body mt-2 line-clamp-4 text-bone/70">{description}</p>
 
           <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             {price && (
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-brick" />
-                <dt className="text-ink/55">{t('price')}:</dt>
-                <dd className="font-medium text-ink">{price}</dd>
+                <dt className="text-bone/55">{t('price')}:</dt>
+                <dd className="font-medium text-bone">{price}</dd>
               </div>
             )}
             {klass.capacity != null && (
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-graphite/40" />
-                <dt className="text-ink/55">{t('capacity')}:</dt>
-                <dd className="font-medium text-ink">
+                <dt className="text-bone/55">{t('capacity')}:</dt>
+                <dd className="font-medium text-bone">
                   {t('seats', { count: toLocaleDigits(klass.capacity, locale) })}
                 </dd>
               </div>

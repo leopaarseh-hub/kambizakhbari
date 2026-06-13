@@ -33,7 +33,7 @@ export default async function HomePage({
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <SectionHeading title={t('bioCta')} seam />
           <div>
-            <p className="prose-body measure text-xl text-ink/85">
+            <p className="prose-body measure text-xl text-bone/85">
               {t('bioSummary')}
             </p>
             <div className="mt-7">
@@ -127,8 +127,8 @@ function TeaserPlate({
   return (
     <div
       className={clsx(
-        'flex flex-col justify-between gap-8 rounded-plate p-8 shadow-snap sm:p-10',
-        ink ? 'bg-ink text-bone' : 'bg-plate text-ink',
+        'flex flex-col justify-between gap-8 rounded-plate bg-plate p-8 text-bone shadow-snap sm:p-10',
+        ink && 'ring-1 ring-brick/40',
       )}
     >
       <div>
@@ -143,7 +143,7 @@ function TeaserPlate({
         <p
           className={clsx(
             'prose-body measure mt-4',
-            ink ? 'text-bone/75' : 'text-ink/70',
+            ink ? 'text-bone/75' : 'text-bone/70',
           )}
         >
           {intro}

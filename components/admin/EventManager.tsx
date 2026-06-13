@@ -87,14 +87,14 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tightest text-ink">{t('title')}</h1>
+        <h1 className="text-2xl font-semibold tracking-tightest text-bone">{t('title')}</h1>
         <Button onClick={() => setDraft({ ...emptyDraft })}>
           <PlusIcon className="h-4 w-4" /> {t('new')}
         </Button>
       </div>
 
       {rows.length === 0 ? (
-        <p className="rounded-plate border border-dashed border-seam bg-plate p-10 text-center text-ink/55">
+        <p className="rounded-plate border border-dashed border-seam bg-plate p-10 text-center text-bone/55">
           {t('empty')}
         </p>
       ) : (
@@ -102,8 +102,8 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
           {rows.map((row) => (
             <li key={row.id} className="flex flex-wrap items-center gap-4 rounded-plate bg-plate p-4 shadow-snap">
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-ink">{row.title_en}</p>
-                <p className="truncate text-sm text-ink/55">
+                <p className="truncate font-medium text-bone">{row.title_en}</p>
+                <p className="truncate text-sm text-bone/55">
                   {row.event_date ?? '—'} · {row.location_en}
                 </p>
               </div>
@@ -111,14 +111,14 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
                 onClick={() => toggleActive(row)}
                 className={clsx(
                   'rounded-full px-2.5 py-1 text-xs font-medium',
-                  row.active ? 'bg-brick/10 text-brick' : 'bg-ink/5 text-ink/50',
+                  row.active ? 'bg-brick/10 text-brick' : 'bg-bone/10 text-bone/50',
                 )}
               >
                 {row.active ? t('active') : '—'}
               </button>
               <div className="flex gap-2">
                 <button onClick={() => setDraft({ ...row })}
-                  className="rounded-full border border-seam px-3 py-1 text-sm hover:bg-ink hover:text-bone">
+                  className="rounded-full border border-seam px-3 py-1 text-sm hover:bg-bone hover:text-ink">
                   {t('edit')}
                 </button>
                 <button onClick={() => remove(row)}
@@ -151,8 +151,8 @@ function Editor({
   const tc = useTranslations('Common');
   return (
     <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/70 p-4">
-      <form onSubmit={onSubmit} className="my-8 w-full max-w-2xl rounded-plate bg-bone p-6 shadow-snap-lg">
-        <h2 className="text-xl font-semibold tracking-tightest text-ink">
+      <form onSubmit={onSubmit} className="my-8 w-full max-w-2xl rounded-plate bg-ink p-6 shadow-snap-lg">
+        <h2 className="text-xl font-semibold tracking-tightest text-bone">
           {draft.id ? t('edit') : t('new')}
         </h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -190,7 +190,7 @@ function Editor({
           </Field>
           <label className="flex items-center gap-2 sm:col-span-2">
             <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
-            <span className="text-sm text-ink">{t('active')}</span>
+            <span className="text-sm text-bone">{t('active')}</span>
           </label>
         </div>
         <div className="mt-6 flex justify-end gap-3">

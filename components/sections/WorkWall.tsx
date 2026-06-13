@@ -49,8 +49,8 @@ export function WorkWall() {
               className={clsx(
                 'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors duration-200',
                 isActive
-                  ? 'border-ink bg-ink text-bone'
-                  : 'border-seam text-ink/70 hover:border-ink/40',
+                  ? 'border-brick bg-brick text-bone'
+                  : 'border-seam text-bone/70 hover:border-bone/40',
               )}
             >
               <span

@@ -29,7 +29,7 @@ function LocaleSwitch() {
       href={pathname}
       locale={next}
       aria-label={t('languageLabel')}
-      className="rounded-full border border-seam px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ink hover:bg-ink hover:text-bone"
+      className="rounded-full border border-seam px-3 py-1.5 text-sm font-medium text-bone transition-colors hover:border-bone hover:bg-bone hover:text-ink"
     >
       {next === 'fa' ? t('switchToFa') : t('switchToEn')}
     </Link>
@@ -50,10 +50,10 @@ export function Header() {
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-seam/70 bg-bone/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-seam/70 bg-ink/80 backdrop-blur-md">
       <div className="shell flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Kambiz Akhbari">
-          <Wordmark className="h-7 w-auto text-ink" name={tMeta('siteName')} />
+          <Wordmark className="h-7 w-auto text-bone" name={tMeta('siteName')} />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -65,8 +65,8 @@ export function Header() {
               className={clsx(
                 'relative rounded-full px-3.5 py-2 text-sm transition-colors',
                 isActive(item.href)
-                  ? 'text-ink'
-                  : 'text-ink/60 hover:text-ink',
+                  ? 'text-bone'
+                  : 'text-bone/60 hover:text-bone',
               )}
             >
               {isActive(item.href) && (
@@ -84,7 +84,7 @@ export function Header() {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? t('close') : t('menu')}
-            className="grid h-10 w-10 place-items-center rounded-full border border-seam text-ink md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full border border-seam text-bone md:hidden"
           >
             {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
@@ -99,7 +99,7 @@ export function Header() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={reduce ? undefined : { height: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
-            className="overflow-hidden border-t border-seam/70 bg-bone md:hidden"
+            className="overflow-hidden border-t border-seam/70 bg-ink md:hidden"
           >
             <ul className="shell flex flex-col py-3">
               {navItems.map((item) => (
@@ -110,8 +110,8 @@ export function Header() {
                     className={clsx(
                       'flex items-center gap-3 rounded-[10px] px-3 py-3 text-base',
                       isActive(item.href)
-                        ? 'bg-ink/5 text-ink'
-                        : 'text-ink/70',
+                        ? 'bg-bone/10 text-bone'
+                        : 'text-bone/70',
                     )}
                   >
                     <span

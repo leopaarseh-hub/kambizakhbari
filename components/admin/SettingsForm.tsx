@@ -32,7 +32,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow | null }) {
 
   return (
     <div className="max-w-xl">
-      <h1 className="mb-6 text-2xl font-semibold tracking-tightest text-ink">{t('title')}</h1>
+      <h1 className="mb-6 text-2xl font-semibold tracking-tightest text-bone">{t('title')}</h1>
       <form onSubmit={save} className="space-y-4 rounded-plate bg-plate p-6 shadow-snap">
         <Field>
           <Label htmlFor="iban">{t('iban')}</Label>

@@ -18,7 +18,7 @@ export async function EventList({
   if (events.length === 0) {
     return (
       <div className="rounded-plate border border-dashed border-seam bg-plate p-12 text-center">
-        <p className="text-ink/60">{t('empty')}</p>
+        <p className="text-bone/60">{t('empty')}</p>
       </div>
     );
   }
@@ -60,7 +60,7 @@ async function EventGroup({
     <section>
       <div className="mb-7 flex items-center gap-3">
         <span className={clsx('h-2 w-2 rounded-full', highlight ? 'bg-brick' : 'bg-graphite/40')} />
-        <h2 className="text-xl font-semibold tracking-tightest text-ink">{heading}</h2>
+        <h2 className="text-xl font-semibold tracking-tightest text-bone">{heading}</h2>
       </div>
 
       <Reveal as="ul" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -85,23 +85,23 @@ async function EventGroup({
                   />
                 </div>
                 <div className="flex flex-1 flex-col p-6">
-                  <h3 className="text-lg font-semibold tracking-tightest text-ink">
+                  <h3 className="text-lg font-semibold tracking-tightest text-bone">
                     {title}
                   </h3>
-                  <p className="prose-body mt-2 line-clamp-3 text-sm text-ink/70">
+                  <p className="prose-body mt-2 line-clamp-3 text-sm text-bone/70">
                     {description}
                   </p>
                   <dl className="mt-4 space-y-1.5 text-sm">
                     {date && (
                       <div className="flex gap-2">
-                        <dt className="text-ink/50">{t('date')}:</dt>
-                        <dd className="font-medium text-ink">{date}</dd>
+                        <dt className="text-bone/50">{t('date')}:</dt>
+                        <dd className="font-medium text-bone">{date}</dd>
                       </div>
                     )}
                     {location && (
                       <div className="flex gap-2">
-                        <dt className="text-ink/50">{t('location')}:</dt>
-                        <dd className="font-medium text-ink">{location}</dd>
+                        <dt className="text-bone/50">{t('location')}:</dt>
+                        <dd className="font-medium text-bone">{location}</dd>
                       </div>
                     )}
                   </dl>

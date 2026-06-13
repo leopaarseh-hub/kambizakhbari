@@ -54,10 +54,10 @@ export function ContactForm() {
         <div className="mb-3 grid h-11 w-11 place-items-center rounded-full bg-brick/10 text-brick">
           <CheckIcon className="h-5 w-5" />
         </div>
-        <h2 className="text-2xl font-semibold tracking-tightest text-ink">
+        <h2 className="text-2xl font-semibold tracking-tightest text-bone">
           {t('successTitle')}
         </h2>
-        <p className="prose-body mt-2 text-ink/75">{t('successBody')}</p>
+        <p className="prose-body mt-2 text-bone/75">{t('successBody')}</p>
       </motion.div>
     );
   }
@@ -86,7 +86,7 @@ export function ContactForm() {
       {status === 'error' && (
         <div className="mt-4 rounded-[10px] border border-brick/40 bg-brick/5 p-4">
           <p className="text-sm font-medium text-brick">{t('errorTitle')}</p>
-          <p className="mt-1 text-sm text-ink/70">{t('errorBody')}</p>
+          <p className="mt-1 text-sm text-bone/70">{t('errorBody')}</p>
         </div>
       )}
 

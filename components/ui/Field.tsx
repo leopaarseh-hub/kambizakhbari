@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { clsx } from '@/lib/clsx';
 
 const controlClass =
-  'w-full rounded-[10px] border border-seam bg-bone px-4 py-3 text-start text-[15px] text-ink placeholder:text-ink/35 transition-colors duration-200 focus:border-brick focus:outline-none focus-visible:outline-none';
+  'w-full rounded-[10px] border border-seam bg-ink px-4 py-3 text-start text-[15px] text-bone placeholder:text-bone/35 transition-colors duration-200 focus:border-brick focus:outline-none focus-visible:outline-none';
 
 export function Label({
   htmlFor,
@@ -18,11 +18,11 @@ export function Label({
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-ink"
+      className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-bone"
     >
       <span>{children}</span>
       {required && <span className="text-brick">*</span>}
-      {hint && <span className="text-ink/40">({hint})</span>}
+      {hint && <span className="text-bone/40">({hint})</span>}
     </label>
   );
 }

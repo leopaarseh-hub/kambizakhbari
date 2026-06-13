@@ -12,8 +12,8 @@ const variants: Record<Variant, string> = {
   primary:
     'bg-brick text-bone shadow-snap hover:shadow-snap-lg',
   outline:
-    'bg-transparent text-ink shadow-seam hover:bg-ink hover:text-bone',
-  ghost: 'bg-transparent text-ink hover:bg-ink/5',
+    'bg-transparent text-bone shadow-seam hover:bg-bone hover:text-ink',
+  ghost: 'bg-transparent text-bone hover:bg-bone/10',
 };
 
 const baseClass =

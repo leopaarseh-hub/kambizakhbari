@@ -20,7 +20,7 @@ export default async function AdminLayout({
   if (!isSupabaseConfigured()) {
     return (
       <div className="shell grid min-h-[60vh] place-items-center py-20 text-center">
-        <p className="max-w-md text-ink/65">
+        <p className="max-w-md text-bone/65">
           Supabase is not configured. Add the environment variables from
           .env.example to enable the admin panel.
         </p>
@@ -38,7 +38,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-bone">
+    <div className="min-h-screen bg-ink">
       <AdminNav email={user.email ?? ''} />
       <div className="mx-auto max-w-6xl px-4 py-8">{children}</div>
     </div>

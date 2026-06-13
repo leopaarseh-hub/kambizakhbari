@@ -105,12 +105,12 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
           exit={reduce ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
           transition={{ duration: 0.32, ease: [0.2, 0.8, 0.2, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="relative my-8 w-full max-w-lg rounded-plate bg-bone p-6 shadow-snap-lg sm:p-8"
+          className="relative my-8 w-full max-w-lg rounded-plate bg-ink p-6 shadow-snap-lg sm:p-8"
         >
           <button
             onClick={onClose}
             aria-label={t('done')}
-            className="absolute top-4 end-4 grid h-9 w-9 place-items-center rounded-full border border-seam text-ink/70 transition-colors hover:bg-ink hover:text-bone"
+            className="absolute top-4 end-4 grid h-9 w-9 place-items-center rounded-full border border-seam text-bone/70 transition-colors hover:bg-bone hover:text-ink"
           >
             <CloseIcon className="h-4 w-4" />
           </button>
@@ -132,15 +132,15 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                 <span className="h-2 w-2 rounded-full bg-graphite/30" />
                 <span className="h-2 w-2 rounded-full bg-graphite/30" />
               </div>
-              <h2 className="text-2xl font-semibold tracking-tightest text-ink">
+              <h2 className="text-2xl font-semibold tracking-tightest text-bone">
                 {t('title')}
               </h2>
-              <p className="mt-1.5 text-sm text-ink/60">
-                {t('forClass')}: <span className="text-ink">{title}</span>
+              <p className="mt-1.5 text-sm text-bone/60">
+                {t('forClass')}: <span className="text-bone">{title}</span>
                 {priceLabel && (
                   <>
                     {' '}
-                    · {tc('price')}: <span className="text-ink">{priceLabel}</span>
+                    · {tc('price')}: <span className="text-bone">{priceLabel}</span>
                   </>
                 )}
               </p>
@@ -191,7 +191,7 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
               {status === 'error' && (
                 <div className="mt-4 rounded-[10px] border border-brick/40 bg-brick/5 p-4">
                   <p className="text-sm font-medium text-brick">{t('errorTitle')}</p>
-                  <p className="mt-1 text-sm text-ink/70">{t('errorBody')}</p>
+                  <p className="mt-1 text-sm text-bone/70">{t('errorBody')}</p>
                 </div>
               )}
 
@@ -233,18 +233,18 @@ function SuccessPanel({
       <div className="mb-3 grid h-11 w-11 place-items-center rounded-full bg-brick/10 text-brick">
         <CheckIcon className="h-5 w-5" />
       </div>
-      <h2 className="text-2xl font-semibold tracking-tightest text-ink">
+      <h2 className="text-2xl font-semibold tracking-tightest text-bone">
         {t('successTitle')}
       </h2>
-      <p className="prose-body mt-2 text-ink/75">{t('successBody')}</p>
+      <p className="prose-body mt-2 text-bone/75">{t('successBody')}</p>
 
       <dl className="mt-6 divide-y divide-seam overflow-hidden rounded-plate bg-plate shadow-snap">
         <Row label={t('forClass')} value={title} />
         <Row label={t('accountHolder')} value={payment.accountHolder} />
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
-            <dt className="text-sm text-ink/55">{t('iban')}</dt>
-            <dd className="mt-0.5 break-all font-mono text-sm text-ink" dir="ltr">
+            <dt className="text-sm text-bone/55">{t('iban')}</dt>
+            <dd className="mt-0.5 break-all font-mono text-sm text-bone" dir="ltr">
               {payment.iban || '—'}
             </dd>
           </div>
@@ -255,7 +255,7 @@ function SuccessPanel({
                 'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                 copied
                   ? 'border-brick bg-brick text-bone'
-                  : 'border-seam text-ink hover:border-ink',
+                  : 'border-seam text-bone hover:border-bone',
               )}
             >
               {copied ? <CheckIcon className="h-3.5 w-3.5" /> : <CopyIcon className="h-3.5 w-3.5" />}
@@ -266,7 +266,7 @@ function SuccessPanel({
         {priceLabel && <Row label={t('amount')} value={priceLabel} />}
       </dl>
 
-      <p className="mt-5 rounded-[10px] border border-seam bg-bone p-4 text-sm text-ink/75">
+      <p className="mt-5 rounded-[10px] border border-seam bg-ink p-4 text-sm text-bone/75">
         {t('sendReceipt', { email: contactEmail })}
       </p>
 
@@ -282,8 +282,8 @@ function SuccessPanel({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 p-4">
-      <dt className="text-sm text-ink/55">{label}</dt>
-      <dd className="text-end text-sm font-medium text-ink">{value}</dd>
+      <dt className="text-sm text-bone/55">{label}</dt>
+      <dd className="text-end text-sm font-medium text-bone">{value}</dd>
     </div>
   );
 }

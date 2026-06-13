@@ -39,7 +39,7 @@ export default async function AboutPage({
       <div className="shell mt-14 grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-start">
         {/* Long-form editorial body on a clean plate. */}
         <Reveal className="order-2 lg:order-1">
-          <div className="prose-body space-y-6 text-lg text-ink/85">
+          <div className="prose-body space-y-6 text-lg text-bone/85">
             {body.map((para, i) => (
               <Brick key={i} as="div">
                 <p className="measure">{para}</p>
@@ -70,7 +70,7 @@ export default async function AboutPage({
           </div>
 
           <div className="mt-6 rounded-plate bg-plate p-6 shadow-snap">
-            <h2 className="text-sm font-semibold text-ink/50">
+            <h2 className="text-sm font-semibold text-bone/50">
               {t('factsTitle')}
             </h2>
             <dl className="mt-4 space-y-3.5">
@@ -78,8 +78,8 @@ export default async function AboutPage({
                 <div key={fact.label} className="flex items-start gap-3">
                   <Stud className="mt-2 shrink-0" />
                   <div>
-                    <dt className="text-sm text-ink/55">{fact.label}</dt>
-                    <dd className="font-display font-medium tracking-tightest text-ink">
+                    <dt className="text-sm text-bone/55">{fact.label}</dt>
+                    <dd className="font-display font-medium tracking-tightest text-bone">
                       {fact.value}
                     </dd>
                   </div>

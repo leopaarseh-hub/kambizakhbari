@@ -35,13 +35,13 @@ export function AdminLogin() {
     <div className="grid min-h-[70vh] place-items-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex items-center gap-2.5">
-          <BrickMark className="h-8 w-auto text-ink" />
+          <BrickMark className="h-8 w-auto text-bone" />
           <span className="font-display text-lg font-semibold tracking-tightest">
             {t('title')}
           </span>
         </div>
         <form onSubmit={handleSubmit} className="rounded-plate bg-plate p-6 shadow-snap">
-          <h1 className="text-xl font-semibold tracking-tightest text-ink">
+          <h1 className="text-xl font-semibold tracking-tightest text-bone">
             {t('signIn')}
           </h1>
           <div className="mt-5 space-y-4">

@@ -9,6 +9,7 @@ import { Footer } from '@/components/sections/Footer';
 import { Loader } from '@/components/motion/Loader';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 import { PageTransition } from '@/components/motion/PageTransition';
+import { SiteBackground } from '@/components/motion/SiteBackground';
 import { ChromeGate } from '@/components/sections/ChromeGate';
 import '../globals.css';
 
@@ -76,7 +77,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>
-      <body className="min-h-screen bg-bone antialiased">
+      <body className="min-h-screen bg-ink antialiased">
         <NextIntlClientProvider>
           <a
             href="#main"
@@ -84,6 +85,7 @@ export default async function LocaleLayout({
           >
             Skip to content
           </a>
+          <SiteBackground />
           <Loader />
           <ScrollProgress />
           <Header />

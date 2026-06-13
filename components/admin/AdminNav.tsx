@@ -33,7 +33,7 @@ export function AdminNav({ email }: { email: string }) {
     <header className="sticky top-0 z-40 border-b border-seam bg-bone/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
         <div className="flex items-center gap-2">
-          <BrickMark className="h-6 w-auto text-ink" />
+          <BrickMark className="h-6 w-auto text-bone" />
           <span className="font-display text-sm font-semibold tracking-tightest">
             {t('title')}
           </span>
@@ -46,8 +46,8 @@ export function AdminNav({ email }: { email: string }) {
               className={clsx(
                 'rounded-full px-3 py-1.5 text-sm transition-colors',
                 isActive(item.href)
-                  ? 'bg-ink text-bone'
-                  : 'text-ink/60 hover:bg-ink/5 hover:text-ink',
+                  ? 'bg-brick text-bone'
+                  : 'text-bone/60 hover:bg-bone/10 hover:text-bone',
               )}
             >
               {t(`nav.${item.key}`)}
@@ -55,10 +55,10 @@ export function AdminNav({ email }: { email: string }) {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <span className="hidden text-xs text-ink/50 sm:inline" dir="ltr">{email}</span>
+          <span className="hidden text-xs text-bone/50 sm:inline" dir="ltr">{email}</span>
           <button
             onClick={signOut}
-            className="rounded-full border border-seam px-3 py-1.5 text-sm text-ink transition-colors hover:bg-ink hover:text-bone"
+            className="rounded-full border border-seam px-3 py-1.5 text-sm text-bone transition-colors hover:bg-bone hover:text-ink"
           >
             {t('signOut')}
           </button>

@@ -91,7 +91,7 @@ export function Hero({ portraitSrc }: { portraitSrc?: string }) {
       {/* Bottom seam transitioning into the light page below. */}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-bone"
+        className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-ink"
       />
     </section>
   );
