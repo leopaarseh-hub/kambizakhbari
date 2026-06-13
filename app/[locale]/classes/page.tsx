@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PageHeader } from '@/components/sections/PageHeader';
 import { ClassList } from '@/components/sections/ClassList';
-import { getActiveClasses, getSettings } from '@/lib/queries';
+import { getActiveClasses, getSettings, isSupabaseConfigured } from '@/lib/queries';
 import { resolvePaymentDetails } from '@/lib/payment';
+import { demoClasses } from '@/lib/demo';
 
 // Classes are dynamic from Supabase, so render on each request.
 export const dynamic = 'force-dynamic';
@@ -33,13 +34,15 @@ export default async function ClassesPage({
     getActiveClasses(),
     getSettings(),
   ]);
+  // Show example classes until the backend is connected.
+  const list = isSupabaseConfigured() ? classes : demoClasses;
   const payment = resolvePaymentDetails(settings);
 
   return (
     <div className="pb-8">
       <PageHeader title={t('title')} intro={t('intro')} />
       <section className="shell mt-14">
-        <ClassList classes={classes} payment={payment} contactEmail={CONTACT_EMAIL} />
+        <ClassList classes={list} payment={payment} contactEmail={CONTACT_EMAIL} />
       </section>
     </div>
   );

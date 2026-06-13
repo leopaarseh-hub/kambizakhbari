@@ -17,6 +17,13 @@ values
     'Build a confident eye for fashion: direction, light shaping, and a clean editorial edit from capture to final frame.',
     'نگاهی مطمئن برای عکاسی مد بسازید: کارگردانی، شکل‌دهی نور و یک تدوین تمیز ادیتوریال از ثبت تا فریم نهایی.',
     'in_person', 300, 'TRY', 4, true
+  ),
+  (
+    'Editing and Color for Music Videos',
+    'تدوین و اصلاح رنگ برای نماهنگ',
+    'Cut to the beat, shape rhythm and story, and grade a music video with a cinematic look. Includes a real project from rushes to delivery.',
+    'هماهنگ با ضرب‌آهنگ تدوین کنید، ریتم و روایت بسازید و یک نماهنگ را با حال‌وهوای سینمایی اصلاح رنگ کنید. شامل یک پروژه واقعی از راش تا خروجی نهایی.',
+    'online', 150, 'TRY', 15, true
   );
 
 insert into public.events
@@ -28,4 +35,11 @@ values
     'An in-person evening of one-to-one portfolio reviews and a short talk on building a body of work.',
     'یک شب حضوری برای بررسی نمونه‌کار به‌صورت تک‌به‌تک و یک گفت‌وگوی کوتاه درباره ساختن یک مجموعه‌کار.',
     '2026-09-20', 'Istanbul', 'استانبول', true
+  ),
+  (
+    'Mobile Storytelling Workshop',
+    'کارگاه روایت‌گری با موبایل',
+    'A hands-on half day creating a short visual story on a phone, from idea to a finished edit.',
+    'نیم‌روز عملی برای ساختن یک داستان تصویری کوتاه با موبایل، از ایده تا تدوین نهایی.',
+    '2026-11-08', 'Istanbul', 'استانبول', true
   );
