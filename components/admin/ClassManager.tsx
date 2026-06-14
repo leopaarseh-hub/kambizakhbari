@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImage } from '@/lib/storage';
+import { revalidatePublicContent } from '@/app/actions';
 import type { ClassRow, ClassType } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Label, Select, Textarea } from '@/components/ui/Field';
@@ -78,6 +79,7 @@ export function ClassManager({ initial }: { initial: ClassRow[] }) {
         return;
       }
       await refresh();
+      await revalidatePublicContent();
       setDraft(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -96,6 +98,7 @@ export function ClassManager({ initial }: { initial: ClassRow[] }) {
       return;
     }
     await refresh();
+    await revalidatePublicContent();
   }
 
   async function remove(row: ClassRow) {
@@ -106,6 +109,7 @@ export function ClassManager({ initial }: { initial: ClassRow[] }) {
       return;
     }
     await refresh();
+    await revalidatePublicContent();
   }
 
   return (

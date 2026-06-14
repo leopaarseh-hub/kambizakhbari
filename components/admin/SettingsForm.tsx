@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImage } from '@/lib/storage';
+import { revalidatePublicContent } from '@/app/actions';
 import type { SettingsRow } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Label } from '@/components/ui/Field';
@@ -50,6 +51,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow | null }) {
         setError(dbError.message);
         return;
       }
+      await revalidatePublicContent();
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err) {

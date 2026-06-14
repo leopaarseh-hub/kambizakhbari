@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImage } from '@/lib/storage';
+import { revalidatePublicContent } from '@/app/actions';
 import type { EventRow } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
 import { Field, Input, Label, Textarea } from '@/components/ui/Field';
@@ -79,6 +80,7 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
         return;
       }
       await refresh();
+      await revalidatePublicContent();
       setDraft(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -97,6 +99,7 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
       return;
     }
     await refresh();
+    await revalidatePublicContent();
   }
 
   async function remove(row: EventRow) {
@@ -107,6 +110,7 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
       return;
     }
     await refresh();
+    await revalidatePublicContent();
   }
 
   return (
