@@ -65,8 +65,11 @@
     "instagramIntro": "A glimpse of recent work.",
     "instagramCta": "Follow on Instagram",
     "youtubeTitle": "Latest videos",
-    "youtubeIntro": "Recent films and music videos.",
-    "youtubeCta": "Watch on YouTube"
+    "youtubeIntro": "Recent films, music videos, and space stories from his channel.",
+    "youtubeCta": "Subscribe on YouTube",
+    "youtubeWatch": "Watch now",
+    "youtubeViews": "views",
+    "youtubeFeatured": "Latest upload"
   },
   "About": {
     "title": "Biography",

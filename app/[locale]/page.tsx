@@ -1,6 +1,5 @@
 import { getTranslations, setRequestLocale, getLocale } from 'next-intl/server';
 import { Hero } from '@/components/sections/Hero';
-import { InstagramFeed } from '@/components/sections/InstagramFeed';
 import { YouTubeFeed } from '@/components/sections/YouTubeFeed';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
@@ -113,8 +112,6 @@ export default async function HomePage({
       </section>
 
       <YouTubeFeed />
-
-      <InstagramFeed />
     </>
   );
 }

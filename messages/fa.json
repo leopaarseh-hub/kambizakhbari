@@ -65,8 +65,11 @@
     "instagramIntro": "نگاهی به کارهای اخیر.",
     "instagramCta": "دنبال‌کردن در اینستاگرام",
     "youtubeTitle": "تازه‌ترین ویدیوها",
-    "youtubeIntro": "فیلم‌ها و نماهنگ‌های اخیر.",
-    "youtubeCta": "تماشا در یوتیوب"
+    "youtubeIntro": "فیلم‌ها، نماهنگ‌ها و روایت‌های فضایی اخیر از کانال او.",
+    "youtubeCta": "عضویت در کانال یوتیوب",
+    "youtubeWatch": "تماشا",
+    "youtubeViews": "بازدید",
+    "youtubeFeatured": "تازه‌ترین ویدیو"
   },
   "About": {
     "title": "بیوگرافی",
