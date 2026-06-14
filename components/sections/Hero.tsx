@@ -53,7 +53,7 @@ export function Hero({ portraitSrc }: { portraitSrc?: string }) {
             <BrickMark className="mb-7 h-11 w-auto text-bone" />
           </motion.div>
 
-          <h1 className="text-balance text-5xl font-semibold leading-[0.95] tracking-tightest sm:text-6xl lg:text-7xl">
+          <h1 className="text-legible text-balance text-5xl font-semibold leading-[0.95] tracking-tightest sm:text-6xl lg:text-7xl">
             <motion.span className="block" variants={reduce ? undefined : heroBrick} custom={1}>
               {t('title')}
             </motion.span>

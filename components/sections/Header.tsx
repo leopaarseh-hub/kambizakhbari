@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Link, usePathname } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
-import { CloseIcon, MenuIcon } from '@/components/ui/Icons';
+import { CloseIcon, MenuIcon, GlobeIcon } from '@/components/ui/Icons';
 import { Wordmark } from '@/components/ui/Wordmark';
 
 const navItems = [
@@ -18,21 +18,78 @@ const navItems = [
   { href: '/contact', key: 'contact' },
 ] as const;
 
+const languages: { code: Locale; label: string }[] = [
+  { code: 'en', label: 'English' },
+  { code: 'fa', label: 'فارسی' },
+];
+
+/**
+ * Globe button that opens a small panel to choose the language. Both locales
+ * are listed, the active one marked. An invisible full-screen backdrop closes
+ * the panel on any outside click.
+ */
 function LocaleSwitch() {
   const t = useTranslations('Nav');
   const locale = useLocale() as Locale;
   const pathname = usePathname();
-  const next: Locale = locale === 'en' ? 'fa' : 'en';
+  const [open, setOpen] = useState(false);
 
   return (
-    <Link
-      href={pathname}
-      locale={next}
-      aria-label={t('languageLabel')}
-      className="rounded-full border border-seam px-3 py-1.5 text-sm font-medium text-bone transition-colors hover:border-bone hover:bg-bone hover:text-ink"
-    >
-      {next === 'fa' ? t('switchToFa') : t('switchToEn')}
-    </Link>
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={t('languageLabel')}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={clsx(
+          'grid h-10 w-10 place-items-center rounded-full border transition-colors',
+          open
+            ? 'border-bone bg-bone text-ink'
+            : 'border-seam text-bone hover:border-bone',
+        )}
+      >
+        <GlobeIcon className="h-5 w-5" />
+      </button>
+
+      {open && (
+        <>
+          <button
+            type="button"
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-40 cursor-default"
+          />
+          <div
+            role="menu"
+            className="absolute end-0 z-50 mt-2 w-40 overflow-hidden rounded-[12px] border border-seam bg-plate p-1 shadow-snap-lg"
+          >
+            {languages.map((lang) => {
+              const active = lang.code === locale;
+              return (
+                <Link
+                  key={lang.code}
+                  href={pathname}
+                  locale={lang.code}
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className={clsx(
+                    'flex items-center justify-between rounded-[8px] px-3 py-2 text-sm transition-colors',
+                    active
+                      ? 'bg-bone/10 text-bone'
+                      : 'text-bone/70 hover:bg-bone/10 hover:text-bone',
+                  )}
+                >
+                  <span dir={lang.code === 'fa' ? 'rtl' : 'ltr'}>{lang.label}</span>
+                  {active && <span className="h-1.5 w-1.5 rounded-full bg-brick" />}
+                </Link>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

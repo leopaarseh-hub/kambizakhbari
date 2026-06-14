@@ -178,6 +178,22 @@
     text-wrap: pretty;
   }
 
+  /* Keep headings crisp when they float over the animated LEGO background. A
+     soft dark halo lifts bone text off any colourful piece behind it. */
+  .text-legible {
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.55), 0 6px 24px rgb(0 0 0 / 0.5);
+  }
+
+  /* Frosted reading panel for longer copy that would otherwise sit directly
+     over the moving background. Keeps text on a calm, legible surface while the
+     colour still glows softly through. */
+  .reading-panel {
+    background-color: rgb(var(--color-plate) / 0.72);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgb(255 255 255 / 0.05);
+    border-radius: var(--plate-radius);
+  }
+
   /* Faint engraved brick grid used only in margins and seams, never behind text. */
   .brick-grid-bg {
     background-image: linear-gradient(

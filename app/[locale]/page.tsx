@@ -34,8 +34,8 @@ export default async function HomePage({
       <section className="shell py-20 sm:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <SectionHeading title={t('bioCta')} seam />
-          <div>
-            <p className="prose-body measure text-xl text-bone/85">
+          <div className="reading-panel p-6 sm:p-8">
+            <p className="prose-body measure text-xl text-bone/90">
               {t('bioSummary')}
             </p>
             <div className="mt-7">

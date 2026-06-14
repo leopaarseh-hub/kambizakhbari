@@ -97,6 +97,18 @@ export function Footer() {
           </p>
           <p>{t('builtIn')}</p>
         </div>
+
+        <p className="mt-6 text-center text-xs text-bone/45">
+          {t('credit')}{' '}
+          <a
+            href="https://parnil.co"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="font-medium text-bone/70 underline-offset-4 transition-colors hover:text-brick hover:underline"
+          >
+            Parnil.co
+          </a>
+        </p>
       </div>
     </footer>
   );

@@ -39,20 +39,23 @@ export default async function AboutPage({
       <PageHeader title={t('title')} intro={t('lead')} />
 
       <div className="shell mt-14 grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-start">
-        {/* Long-form editorial body on a clean plate. */}
+        {/* Long-form editorial body on a frosted reading panel so the moving
+            background never interferes with the copy. */}
         <Reveal className="order-2 lg:order-1">
-          <div className="prose-body space-y-6 text-lg text-bone/85">
-            {body.map((para, i) => (
-              <Brick key={i} as="div">
-                <p className="measure">{para}</p>
-              </Brick>
-            ))}
-          </div>
+          <div className="reading-panel p-6 sm:p-8">
+            <div className="prose-body space-y-6 text-lg text-bone/90">
+              {body.map((para, i) => (
+                <Brick key={i} as="div">
+                  <p className="measure">{para}</p>
+                </Brick>
+              ))}
+            </div>
 
-          <div className="mt-10">
-            <ButtonLink href="/contact" variant="outline" withArrow>
-              {tNav('contact')}
-            </ButtonLink>
+            <div className="mt-10">
+              <ButtonLink href="/contact" variant="outline" withArrow>
+                {tNav('contact')}
+              </ButtonLink>
+            </div>
           </div>
         </Reveal>
 

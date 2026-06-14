@@ -31,13 +31,13 @@ export function SectionHeading({
           className={clsx('mb-5', align === 'center' ? 'justify-center' : 'justify-start')}
         />
       )}
-      <h2 className="text-3xl font-semibold tracking-tightest text-bone sm:text-4xl">
+      <h2 className="text-legible text-3xl font-semibold tracking-tightest text-bone sm:text-4xl">
         {title}
       </h2>
       {intro && (
         <p
           className={clsx(
-            'prose-body measure mt-4 text-base text-bone/70',
+            'prose-body measure mt-4 text-base text-bone/75 [text-shadow:0_1px_8px_rgb(0_0_0_/_0.5)]',
             align === 'center' && 'mx-auto',
           )}
         >
