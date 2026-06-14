@@ -12,9 +12,10 @@ import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
 
 // Hero portrait resolution order: photo uploaded in the admin panel (stored in
-// settings) > NEXT_PUBLIC_HERO_PORTRAIT env URL > local public/images file.
+// settings) > NEXT_PUBLIC_HERO_PORTRAIT env URL > the file committed under
+// public/images. Update the filename here if you upload a differently named one.
 function heroPortrait(heroUrl: string | null | undefined): string {
-  return heroUrl || process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/hero-portrait.jpg';
+  return heroUrl || process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/kambiz-hero.webp';
 }
 
 export default async function HomePage({
