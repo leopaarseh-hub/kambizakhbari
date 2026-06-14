@@ -26,6 +26,7 @@ create table if not exists public.classes (
   capacity integer,
   image_url text,
   active boolean not null default true,
+  sold_out boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -39,8 +40,12 @@ create table if not exists public.events (
   event_date date,
   location_en text,
   location_fa text,
+  price numeric,
+  currency text default 'TRY',
+  capacity integer,
   image_url text,
   active boolean not null default true,
+  sold_out boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -48,6 +53,7 @@ create table if not exists public.events (
 create table if not exists public.registrations (
   id uuid primary key default gen_random_uuid(),
   class_id uuid references public.classes (id) on delete set null,
+  event_id uuid references public.events (id) on delete set null,
   full_name text not null,
   email text not null,
   phone text not null,
@@ -174,3 +180,21 @@ create policy "media admin update" on storage.objects
 drop policy if exists "media admin delete" on storage.objects;
 create policy "media admin delete" on storage.objects
   for delete using (bucket_id = 'media' and auth.uid() is not null);
+
+-- ============================================================================
+-- Public, PII-free confirmed-seat counts, used to auto-mark sold out.
+-- ============================================================================
+create or replace view public.class_seat_counts as
+  select class_id, count(*)::int as confirmed
+  from public.registrations
+  where status = 'confirmed' and class_id is not null
+  group by class_id;
+
+create or replace view public.event_seat_counts as
+  select event_id, count(*)::int as confirmed
+  from public.registrations
+  where status = 'confirmed' and event_id is not null
+  group by event_id;
+
+grant select on public.class_seat_counts to anon, authenticated;
+grant select on public.event_seat_counts to anon, authenticated;

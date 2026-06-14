@@ -1,19 +1,29 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { getLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale, getLocale } from 'next-intl/server';
 import { Hero } from '@/components/sections/Hero';
+import { InstagramFeed } from '@/components/sections/InstagramFeed';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
 import { Reveal, Brick } from '@/components/motion/Reveal';
 import { PlateImage } from '@/components/ui/PlateImage';
-import { StudSeam } from '@/components/ui/Stud';
-import { teaserWork } from '@/lib/work';
-import { getSettings } from '@/lib/queries';
+import { SoldOutPill } from '@/components/ui/SoldOut';
+import { Link } from '@/i18n/navigation';
+import {
+  getActiveClasses,
+  getActiveEvents,
+  getSettings,
+  isSupabaseConfigured,
+  attachSeats,
+} from '@/lib/queries';
+import { demoClasses, demoEvents } from '@/lib/demo';
+import { localized, type ClassRow, type EventRow, type WithSeats } from '@/lib/types';
+import { resolvePaymentDetails } from '@/lib/payment';
+import { formatDate, formatPrice, isUpcoming } from '@/lib/format';
 import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
 
 // Hero portrait resolution order: photo uploaded in the admin panel (stored in
 // settings) > NEXT_PUBLIC_HERO_PORTRAIT env URL > the file committed under
-// public/images. Update the filename here if you upload a differently named one.
+// public/images.
 function heroPortrait(heroUrl: string | null | undefined): string {
   return heroUrl || process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/kambiz-hero.webp';
 }
@@ -26,22 +36,36 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('Home');
+  const tCommon = await getTranslations('Common');
+  const soldOutLabel = tCommon('soldOut');
   const activeLocale = (await getLocale()) as Locale;
-  const settings = await getSettings();
-  const HERO_PORTRAIT = heroPortrait(settings?.hero_image_url);
+
+  const [classesRaw, eventsRaw, settings] = await Promise.all([
+    getActiveClasses(),
+    getActiveEvents(),
+    getSettings(),
+  ]);
+  const configured = isSupabaseConfigured();
+  const classes = configured ? classesRaw : attachSeats(demoClasses);
+  const events = configured ? eventsRaw : attachSeats(demoEvents);
+  const payment = resolvePaymentDetails(settings);
+
+  // Latest two of each, events preferring upcoming dates.
+  const topClasses = classes.slice(0, 2);
+  const topEvents = [...events]
+    .sort((a, b) => Number(isUpcoming(b.event_date)) - Number(isUpcoming(a.event_date)))
+    .slice(0, 2);
 
   return (
     <>
-      <Hero portraitSrc={HERO_PORTRAIT} />
+      <Hero portraitSrc={heroPortrait(settings?.hero_image_url)} />
 
       {/* Biography summary only. The full bio lives on /about. */}
       <section className="shell py-20 sm:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <SectionHeading title={t('bioCta')} seam />
           <div className="reading-panel p-6 sm:p-8">
-            <p className="prose-body measure text-xl text-bone/90">
-              {t('bioSummary')}
-            </p>
+            <p className="prose-body measure text-xl text-bone/90">{t('bioSummary')}</p>
             <div className="mt-7">
               <ButtonLink href="/about" variant="outline" withArrow>
                 {t('bioCta')}
@@ -55,114 +79,156 @@ export default async function HomePage({
         <div className="seam" />
       </div>
 
-      {/* Curated portfolio teaser. */}
+      {/* What's on: latest classes and events. */}
       <section className="shell py-20 sm:py-24">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHeading title={t('workTitle')} intro={t('workIntro')} />
-          <ButtonLink href="/work" variant="ghost" withArrow>
-            {t('workCta')}
-          </ButtonLink>
-        </div>
+        <SectionHeading title={t('latestTitle')} intro={t('latestIntro')} />
 
-        <Reveal
-          as="ul"
-          className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4"
-        >
-          {teaserWork.map((item, i) => (
-            <Brick
-              as="li"
-              key={item.id}
-              className={clsx(i % 2 === 1 ? 'mt-0 sm:mt-8' : '')}
+        <div className="mt-12 grid gap-10 lg:grid-cols-2">
+          {topClasses.length > 0 && (
+            <Highlights
+              heading={t('classesTitle')}
+              cta={t('viewClasses')}
+              href="/classes"
             >
-              <div
-                className={clsx(
-                  'relative overflow-hidden rounded-plate bg-ink shadow-snap',
-                  item.aspect,
-                )}
-              >
-                <PlateImage
-                  src={item.src}
-                  alt={item.alt[activeLocale]}
-                  sizes="(max-width: 640px) 50vw, 25vw"
-                />
-                <span className="pointer-events-none absolute inset-0 rounded-plate ring-1 ring-inset ring-ink/10" />
-              </div>
-            </Brick>
-          ))}
-        </Reveal>
-      </section>
-
-      {/* Classes and Events teasers as paired plates. */}
-      <section className="shell py-20 sm:py-24">
-        <StudSeam className="mb-12" />
-        <div className="grid gap-6 lg:grid-cols-2">
-          <TeaserPlate
-            title={t('classesTitle')}
-            intro={t('classesIntro')}
-            cta={t('classesCta')}
-            href="/classes"
-            tone="ink"
-          />
-          <TeaserPlate
-            title={t('eventsTitle')}
-            intro={t('eventsIntro')}
-            cta={t('eventsCta')}
-            href="/events"
-            tone="plate"
-          />
+              {topClasses.map((c) => (
+                <ClassMini key={c.id} item={c} locale={activeLocale}
+                  currency={payment.currency} soldOutLabel={soldOutLabel} />
+              ))}
+            </Highlights>
+          )}
+          {topEvents.length > 0 && (
+            <Highlights
+              heading={t('eventsTitle')}
+              cta={t('viewEvents')}
+              href="/events"
+            >
+              {topEvents.map((e) => (
+                <EventMini key={e.id} item={e} locale={activeLocale}
+                  soldOutLabel={soldOutLabel} />
+              ))}
+            </Highlights>
+          )}
         </div>
       </section>
+
+      <InstagramFeed />
     </>
   );
 }
 
-function TeaserPlate({
-  title,
-  intro,
+function Highlights({
+  heading,
   cta,
   href,
-  tone,
+  children,
 }: {
-  title: string;
-  intro: string;
+  heading: string;
   cta: string;
   href: string;
-  tone: 'ink' | 'plate';
+  children: React.ReactNode;
 }) {
-  const ink = tone === 'ink';
   return (
-    <div
-      className={clsx(
-        'flex flex-col justify-between gap-8 rounded-plate bg-plate p-8 text-bone shadow-snap sm:p-10',
-        ink && 'ring-1 ring-brick/40',
-      )}
-    >
-      <div>
-        <div className="mb-5 flex gap-2">
-          <span className="h-2 w-2 rounded-full bg-brick" />
-          <span className={clsx('h-2 w-2 rounded-full', ink ? 'bg-bone/30' : 'bg-graphite/30')} />
-          <span className={clsx('h-2 w-2 rounded-full', ink ? 'bg-bone/30' : 'bg-graphite/30')} />
-        </div>
-        <h3 className="text-2xl font-semibold tracking-tightest sm:text-3xl">
-          {title}
-        </h3>
-        <p
-          className={clsx(
-            'prose-body measure mt-4',
-            ink ? 'text-bone/75' : 'text-bone/70',
-          )}
-        >
-          {intro}
-        </p>
+    <div>
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h3 className="text-lg font-semibold tracking-tightest text-bone">{heading}</h3>
+        <ButtonLink href={href} variant="ghost" withArrow className="!text-bone">
+          {cta}
+        </ButtonLink>
       </div>
-      <ButtonLink
-        href={href}
-        variant={ink ? 'primary' : 'outline'}
-        withArrow
-        className="self-start"
-      >
-        {cta}
-      </ButtonLink>
+      <Reveal as="ul" className="grid gap-4 sm:grid-cols-2">
+        {children}
+      </Reveal>
     </div>
+  );
+}
+
+function ClassMini({
+  item,
+  locale,
+  currency,
+  soldOutLabel,
+}: {
+  item: WithSeats<ClassRow>;
+  locale: Locale;
+  currency: string;
+  soldOutLabel: string;
+}) {
+  const price = formatPrice(item.price, item.currency ?? currency, locale);
+  return (
+    <MiniCard
+      href="/classes"
+      image={item.image_url}
+      title={localized(item, 'title', locale)}
+      meta={price ?? ''}
+      soldOut={item.soldOut}
+      soldOutLabel={soldOutLabel}
+    />
+  );
+}
+
+function EventMini({
+  item,
+  locale,
+  soldOutLabel,
+}: {
+  item: WithSeats<EventRow>;
+  locale: Locale;
+  soldOutLabel: string;
+}) {
+  const date = formatDate(item.event_date, locale);
+  return (
+    <MiniCard
+      href="/events"
+      image={item.image_url}
+      title={localized(item, 'title', locale)}
+      meta={date ?? ''}
+      soldOut={item.soldOut}
+      soldOutLabel={soldOutLabel}
+    />
+  );
+}
+
+function MiniCard({
+  href,
+  image,
+  title,
+  meta,
+  soldOut,
+  soldOutLabel,
+}: {
+  href: string;
+  image: string | null;
+  title: string;
+  meta: string;
+  soldOut: boolean;
+  soldOutLabel: string;
+}) {
+  return (
+    <Brick as="li">
+      <Link
+        href={href}
+        className="group block overflow-hidden rounded-plate bg-plate shadow-snap transition-shadow duration-300 hover:shadow-snap-lg"
+      >
+        <div className="relative aspect-[16/10] bg-ink">
+          <PlateImage src={image} alt={title} sizes="(max-width: 1024px) 50vw, 25vw" />
+          {soldOut && (
+            <span className="absolute top-3 start-3 z-10">
+              <SoldOutPill label={soldOutLabel} />
+            </span>
+          )}
+        </div>
+        <div className="p-4">
+          <h4
+            className={clsx(
+              'line-clamp-1 font-medium tracking-tightest text-bone',
+              soldOut && 'opacity-70',
+            )}
+          >
+            {title}
+          </h4>
+          {meta && <p className="mt-0.5 text-sm text-bone/55">{meta}</p>}
+        </div>
+      </Link>
+    </Brick>
   );
 }

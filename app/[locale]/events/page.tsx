@@ -2,11 +2,18 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PageHeader } from '@/components/sections/PageHeader';
 import { EventList } from '@/components/sections/EventList';
-import { getActiveEvents, isSupabaseConfigured } from '@/lib/queries';
+import {
+  getActiveEvents,
+  getSettings,
+  isSupabaseConfigured,
+  attachSeats,
+} from '@/lib/queries';
+import { resolvePaymentDetails } from '@/lib/payment';
 import { demoEvents } from '@/lib/demo';
-import type { Locale } from '@/i18n/routing';
 
 export const dynamic = 'force-dynamic';
+
+const CONTACT_EMAIL = 'Info@kambizakhbari.com';
 
 export async function generateMetadata({
   params,
@@ -26,15 +33,16 @@ export default async function EventsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('Events');
-  const events = await getActiveEvents();
-  // Show example events until the backend is connected.
-  const list = isSupabaseConfigured() ? events : demoEvents;
+
+  const [events, settings] = await Promise.all([getActiveEvents(), getSettings()]);
+  const list = isSupabaseConfigured() ? events : attachSeats(demoEvents);
+  const payment = resolvePaymentDetails(settings);
 
   return (
     <div className="pb-8">
       <PageHeader title={t('title')} intro={t('intro')} />
       <section className="shell mt-14">
-        <EventList events={list} locale={locale as Locale} />
+        <EventList events={list} payment={payment} contactEmail={CONTACT_EMAIL} />
       </section>
     </div>
   );

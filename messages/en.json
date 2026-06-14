@@ -1,8 +1,8 @@
 {
   "Meta": {
     "siteName": "Kambiz Akhbari",
-    "defaultTitle": "Kambiz Akhbari, Fashion Photographer and Filmmaker",
-    "defaultDescription": "Kambiz Akhbari is a freelance fashion photographer, filmmaker, and art director based in Istanbul, and founder of Lead34.",
+    "defaultTitle": "Kambiz Akhbari, Professional Photographer and Filmmaker",
+    "defaultDescription": "Kambiz Akhbari is a freelance professional photographer, filmmaker, and art director based in Istanbul, and founder of Lead34.",
     "ogAlt": "Kambiz Akhbari"
   },
   "Nav": {
@@ -36,13 +36,17 @@
     "inPerson": "In person, private",
     "upcoming": "Upcoming",
     "past": "Past",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "soldOut": "Sold out",
+    "free": "Free",
+    "spotsLeft": "{count} places left",
+    "registerNow": "Register"
   },
   "Home": {
     "title": "Kambiz Akhbari",
-    "positioning": "Fashion photography, film, and art direction from Istanbul.",
+    "positioning": "Professional photography, film, and art direction from Istanbul.",
     "scroll": "Scroll",
-    "bioSummary": "Kambiz Akhbari is a freelance fashion photographer, filmmaker, and art director. He directs and edits for leading Iranian artists and is the founder of Lead34, a production company and label in Istanbul.",
+    "bioSummary": "Kambiz Akhbari is a freelance professional photographer, filmmaker, and art director. He directs and edits for leading Iranian artists and is the founder of Lead34, a production company and label in Istanbul.",
     "bioCta": "Read the full biography",
     "workTitle": "Selected work",
     "workIntro": "A short selection across fashion, film, and direction.",
@@ -52,13 +56,20 @@
     "classesCta": "Explore classes",
     "eventsTitle": "Events",
     "eventsIntro": "Workshops, talks, and appearances.",
-    "eventsCta": "See events"
+    "eventsCta": "See events",
+    "latestTitle": "What's on",
+    "latestIntro": "Upcoming classes and events.",
+    "viewClasses": "All classes",
+    "viewEvents": "All events",
+    "instagramTitle": "Latest on Instagram",
+    "instagramIntro": "A glimpse of recent work.",
+    "instagramCta": "Follow on Instagram"
   },
   "About": {
     "title": "Biography",
     "lead": "Photographer, filmmaker, and art director.",
     "body": [
-      "Kambiz Akhbari (born 1984) is a freelance fashion photographer, filmmaker, and art director. Trained in computer software engineering, he began working in design and graphics at seventeen and in photography at nineteen.",
+      "Kambiz Akhbari (born 1984) is a freelance professional photographer, filmmaker, and art director. Trained in computer software engineering, he began working in design and graphics at seventeen and in photography at nineteen.",
       "He has directed and edited music videos for leading Iranian artists, including Yas, 25Band, and The Ways. He is the founder of Lead34, a production company and label based in Istanbul.",
       "Alongside his commercial and editorial work, he is a sought-after mentor in videography, photography, and editing, including mobile-first workflows, and has trained a large number of students who now work with the best in the market."
     ],
@@ -66,7 +77,7 @@
     "facts": [
       { "label": "Based in", "value": "Istanbul" },
       { "label": "Founder of", "value": "Lead34" },
-      { "label": "Focus", "value": "Fashion, film, direction" }
+      { "label": "Focus", "value": "Photography, film, direction" }
     ]
   },
   "Work": {
@@ -123,6 +134,8 @@
     "requestTitle": "Request received",
     "requestBody": "Your place is held as pending. Since an IBAN transfer is not available in your country, Kambiz will contact you by email or phone to confirm the details and arrange payment.",
     "requestContact": "Kambiz will reach out to {email} and your phone shortly.",
+    "freeTitle": "You're registered",
+    "freeBody": "Your place is booked. This is free, so there is nothing to pay. Kambiz's team will email any final details.",
     "payTo": "Transfer to",
     "accountHolder": "Account holder",
     "iban": "IBAN",
@@ -163,7 +176,7 @@
     }
   },
   "Footer": {
-    "tagline": "Fashion photography, film, and art direction.",
+    "tagline": "Professional photography, film, and art direction.",
     "navTitle": "Pages",
     "connectTitle": "Connect",
     "instagram": "Instagram",
@@ -203,6 +216,7 @@
       "capacity": "Capacity",
       "image": "Image",
       "active": "Active",
+      "soldOut": "Sold out",
       "save": "Save",
       "saving": "Saving",
       "delete": "Delete",
@@ -220,8 +234,13 @@
       "date": "Date",
       "locationEn": "Location (English)",
       "locationFa": "Location (Persian)",
+      "price": "Price",
+      "priceHint": "leave empty for free",
+      "currency": "Currency",
+      "capacity": "Capacity",
       "image": "Image",
       "active": "Active",
+      "soldOut": "Sold out",
       "save": "Save",
       "saving": "Saving",
       "delete": "Delete",

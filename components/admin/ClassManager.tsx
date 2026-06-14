@@ -23,6 +23,7 @@ const emptyDraft: Draft = {
   capacity: null,
   image_url: null,
   active: true,
+  sold_out: false,
 };
 
 export function ClassManager({ initial }: { initial: ClassRow[] }) {
@@ -65,6 +66,7 @@ export function ClassManager({ initial }: { initial: ClassRow[] }) {
         capacity: form.get('capacity') ? Number(form.get('capacity')) : null,
         image_url: imageUrl,
         active: form.get('active') === 'on',
+        sold_out: form.get('sold_out') === 'on',
       };
 
       const { error: dbError } = draft.id
@@ -248,10 +250,16 @@ function Editor({
             <Label htmlFor="image">{t('image')}</Label>
             <Input id="image" name="image" type="file" accept="image/*" />
           </Field>
-          <label className="flex items-center gap-2 sm:col-span-2">
-            <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
-            <span className="text-sm text-bone">{t('active')}</span>
-          </label>
+          <div className="flex flex-wrap gap-6 sm:col-span-2">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
+              <span className="text-sm text-bone">{t('active')}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="sold_out" defaultChecked={draft.sold_out ?? false} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
+              <span className="text-sm text-bone">{t('soldOut')}</span>
+            </label>
+          </div>
         </div>
         {error && (
           <div className="mt-5 rounded-[10px] border border-brick/40 bg-brick/10 p-3 text-sm text-bone">

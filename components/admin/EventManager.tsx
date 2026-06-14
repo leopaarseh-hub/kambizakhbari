@@ -20,8 +20,12 @@ const emptyDraft: Draft = {
   event_date: '',
   location_en: '',
   location_fa: '',
+  price: null,
+  currency: 'TRY',
+  capacity: null,
   image_url: null,
   active: true,
+  sold_out: false,
 };
 
 export function EventManager({ initial }: { initial: EventRow[] }) {
@@ -60,8 +64,12 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
         event_date: form.get('event_date') ? String(form.get('event_date')) : null,
         location_en: String(form.get('location_en') ?? ''),
         location_fa: String(form.get('location_fa') ?? ''),
+        price: form.get('price') ? Number(form.get('price')) : null,
+        currency: String(form.get('currency') ?? 'TRY'),
+        capacity: form.get('capacity') ? Number(form.get('capacity')) : null,
         image_url: imageUrl,
         active: form.get('active') === 'on',
+        sold_out: form.get('sold_out') === 'on',
       };
       const { error: dbError } = draft.id
         ? await supabase.from('events').update(payload).eq('id', draft.id)
@@ -226,10 +234,30 @@ function Editor({
             <Label htmlFor="location_fa">{t('locationFa')}</Label>
             <Input id="location_fa" name="location_fa" defaultValue={draft.location_fa ?? ''} dir="rtl" />
           </Field>
-          <label className="flex items-center gap-2 sm:col-span-2">
-            <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
-            <span className="text-sm text-bone">{t('active')}</span>
-          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <Field>
+              <Label htmlFor="price" hint={t('priceHint')}>{t('price')}</Label>
+              <Input id="price" name="price" type="number" min="0" defaultValue={draft.price ?? ''} dir="ltr" />
+            </Field>
+            <Field>
+              <Label htmlFor="currency">{t('currency')}</Label>
+              <Input id="currency" name="currency" defaultValue={draft.currency ?? 'TRY'} dir="ltr" />
+            </Field>
+          </div>
+          <Field>
+            <Label htmlFor="capacity">{t('capacity')}</Label>
+            <Input id="capacity" name="capacity" type="number" min="0" defaultValue={draft.capacity ?? ''} dir="ltr" />
+          </Field>
+          <div className="flex flex-wrap gap-6 sm:col-span-2">
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="active" defaultChecked={draft.active ?? true} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
+              <span className="text-sm text-bone">{t('active')}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" name="sold_out" defaultChecked={draft.sold_out ?? false} className="h-4 w-4 accent-[rgb(var(--color-brick))]" />
+              <span className="text-sm text-bone">{t('soldOut')}</span>
+            </label>
+          </div>
         </div>
         {error && (
           <div className="mt-5 rounded-[10px] border border-brick/40 bg-brick/10 p-3 text-sm text-bone">

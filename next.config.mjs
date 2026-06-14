@@ -15,6 +15,9 @@ const nextConfig = {
         hostname: '*.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
+      // Instagram media CDN, for the live "latest posts" feed on the home page.
+      { protocol: 'https', hostname: '*.cdninstagram.com' },
+      { protocol: 'https', hostname: '*.fbcdn.net' },
     ],
     formats: ['image/avif', 'image/webp'],
   },

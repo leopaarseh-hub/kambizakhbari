@@ -1,19 +1,28 @@
-import { getTranslations } from 'next-intl/server';
-import { localized, type EventRow } from '@/lib/types';
+'use client';
+
+import { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { localized, type EventRow, type WithSeats } from '@/lib/types';
+import type { PaymentDetails } from '@/lib/payment';
 import type { Locale } from '@/i18n/routing';
-import { formatDate, isUpcoming } from '@/lib/format';
+import { formatDate, formatPrice, isUpcoming } from '@/lib/format';
 import { PlateImage } from '@/components/ui/PlateImage';
+import { Button } from '@/components/ui/Button';
+import { SoldOutOverlay } from '@/components/ui/SoldOut';
 import { Reveal, Brick } from '@/components/motion/Reveal';
+import { RegistrationDialog } from './RegistrationDialog';
 import { clsx } from '@/lib/clsx';
 
-export async function EventList({
-  events,
-  locale,
-}: {
-  events: EventRow[];
-  locale: Locale;
-}) {
-  const t = await getTranslations('Events');
+interface Props {
+  events: WithSeats<EventRow>[];
+  payment: PaymentDetails;
+  contactEmail: string;
+}
+
+export function EventList({ events, payment, contactEmail }: Props) {
+  const t = useTranslations('Events');
+  const locale = useLocale() as Locale;
+  const [selected, setSelected] = useState<WithSeats<EventRow> | null>(null);
 
   if (events.length === 0) {
     return (
@@ -29,32 +38,48 @@ export async function EventList({
   return (
     <div className="space-y-16">
       {upcoming.length > 0 && (
-        <EventGroup
-          heading={t('upcoming')}
-          events={upcoming}
-          locale={locale}
-          highlight
-        />
+        <EventGroup heading={t('upcoming')} events={upcoming} locale={locale}
+          highlight onRegister={setSelected} />
       )}
       {past.length > 0 && (
-        <EventGroup heading={t('past')} events={past} locale={locale} />
+        <EventGroup heading={t('past')} events={past} locale={locale}
+          onRegister={setSelected} />
+      )}
+
+      {selected && (
+        <RegistrationDialog
+          target={{
+            id: selected.id,
+            kind: 'event',
+            title: localized(selected, 'title', locale),
+            price: selected.price,
+            currency: selected.currency,
+            freeIfNoPrice: true,
+          }}
+          payment={payment}
+          contactEmail={contactEmail}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );
 }
 
-async function EventGroup({
+function EventGroup({
   heading,
   events,
   locale,
   highlight = false,
+  onRegister,
 }: {
   heading: string;
-  events: EventRow[];
+  events: WithSeats<EventRow>[];
   locale: Locale;
   highlight?: boolean;
+  onRegister: (e: WithSeats<EventRow>) => void;
 }) {
-  const t = await getTranslations('Events');
+  const t = useTranslations('Events');
+  const tCommon = useTranslations('Common');
 
   return (
     <section>
@@ -69,6 +94,10 @@ async function EventGroup({
           const description = localized(event, 'description', locale);
           const location = localized(event, 'location', locale);
           const date = formatDate(event.event_date, locale);
+          const upcoming = isUpcoming(event.event_date);
+          const price = formatPrice(event.price, event.currency, locale);
+          const priceLabel = event.price != null && event.price > 0 ? price : tCommon('free');
+
           return (
             <Brick as="li" key={event.id}>
               <article
@@ -78,11 +107,13 @@ async function EventGroup({
                 )}
               >
                 <div className="relative aspect-[16/10] bg-ink">
-                  <PlateImage
-                    src={event.image_url}
-                    alt={title}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+                  <PlateImage src={event.image_url} alt={title}
+                    sizes="(max-width: 768px) 100vw, 33vw" />
+                  {event.soldOut && <SoldOutOverlay label={tCommon('soldOut')} />}
+                  <span className="absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full bg-ink/80 px-3 py-1 text-xs font-medium text-bone backdrop-blur">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brick" />
+                    {priceLabel}
+                  </span>
                 </div>
                 <div className="flex flex-1 flex-col p-6">
                   <h3 className="text-lg font-semibold tracking-tightest text-bone">
@@ -105,6 +136,22 @@ async function EventGroup({
                       </div>
                     )}
                   </dl>
+
+                  {upcoming && (
+                    <div className="mt-5 pt-1">
+                      {event.soldOut ? (
+                        <Button variant="outline" disabled
+                          className="w-full justify-center uppercase tracking-widest">
+                          {tCommon('soldOut')}
+                        </Button>
+                      ) : (
+                        <Button onClick={() => onRegister(event)} withArrow
+                          className="w-full justify-center">
+                          {tCommon('registerNow')}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </article>
             </Brick>

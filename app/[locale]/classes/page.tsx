@@ -2,7 +2,12 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PageHeader } from '@/components/sections/PageHeader';
 import { ClassList } from '@/components/sections/ClassList';
-import { getActiveClasses, getSettings, isSupabaseConfigured } from '@/lib/queries';
+import {
+  getActiveClasses,
+  getSettings,
+  isSupabaseConfigured,
+  attachSeats,
+} from '@/lib/queries';
 import { resolvePaymentDetails } from '@/lib/payment';
 import { demoClasses } from '@/lib/demo';
 
@@ -35,7 +40,7 @@ export default async function ClassesPage({
     getSettings(),
   ]);
   // Show example classes until the backend is connected.
-  const list = isSupabaseConfigured() ? classes : demoClasses;
+  const list = isSupabaseConfigured() ? classes : attachSeats(demoClasses);
   const payment = resolvePaymentDetails(settings);
 
   return (

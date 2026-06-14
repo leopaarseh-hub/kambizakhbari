@@ -3,18 +3,19 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useReducedMotion, motion } from 'framer-motion';
-import { localized, type ClassRow } from '@/lib/types';
+import { localized, type ClassRow, type WithSeats } from '@/lib/types';
 import type { PaymentDetails } from '@/lib/payment';
 import type { Locale } from '@/i18n/routing';
 import { formatPrice, toLocaleDigits } from '@/lib/format';
 import { PlateImage } from '@/components/ui/PlateImage';
 import { Button } from '@/components/ui/Button';
+import { SoldOutOverlay } from '@/components/ui/SoldOut';
 import { Reveal, Brick } from '@/components/motion/Reveal';
 import { RegistrationDialog } from './RegistrationDialog';
 import { clsx } from '@/lib/clsx';
 
 interface Props {
-  classes: ClassRow[];
+  classes: WithSeats<ClassRow>[];
   payment: PaymentDetails;
   contactEmail: string;
 }
@@ -22,7 +23,7 @@ interface Props {
 export function ClassList({ classes, payment, contactEmail }: Props) {
   const t = useTranslations('Classes');
   const locale = useLocale() as Locale;
-  const [selected, setSelected] = useState<ClassRow | null>(null);
+  const [selected, setSelected] = useState<WithSeats<ClassRow> | null>(null);
 
   if (classes.length === 0) {
     return (
@@ -48,7 +49,15 @@ export function ClassList({ classes, payment, contactEmail }: Props) {
 
       {selected && (
         <RegistrationDialog
-          klass={selected}
+          target={{
+            id: selected.id,
+            kind: 'class',
+            title: localized(selected, 'title', locale),
+            price: selected.price,
+            currency: selected.currency,
+            type: selected.type,
+            freeIfNoPrice: false,
+          }}
           payment={payment}
           contactEmail={contactEmail}
           onClose={() => setSelected(null)}
@@ -64,12 +73,13 @@ function ClassCard({
   currencyFallback,
   onRegister,
 }: {
-  klass: ClassRow;
+  klass: WithSeats<ClassRow>;
   locale: Locale;
   currencyFallback: string;
   onRegister: () => void;
 }) {
   const t = useTranslations('Classes');
+  const tCommon = useTranslations('Common');
   const reduce = useReducedMotion();
   const title = localized(klass, 'title', locale);
   const description = localized(klass, 'description', locale);
@@ -79,7 +89,7 @@ function ClassCard({
   return (
     <Brick as="li">
       <motion.article
-        whileHover={reduce ? undefined : { y: -4 }}
+        whileHover={reduce || klass.soldOut ? undefined : { y: -4 }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
         className="flex h-full flex-col overflow-hidden rounded-plate bg-plate shadow-snap transition-shadow duration-300 hover:shadow-snap-lg"
       >
@@ -89,9 +99,10 @@ function ClassCard({
             alt={title}
             sizes="(max-width: 768px) 100vw, 50vw"
           />
+          {klass.soldOut && <SoldOutOverlay label={tCommon('soldOut')} />}
           <span
             className={clsx(
-              'absolute top-3 start-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium backdrop-blur',
+              'absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium backdrop-blur',
               isOnline ? 'bg-ink/80 text-bone' : 'bg-brick text-bone',
             )}
           >
@@ -124,9 +135,19 @@ function ClassCard({
           </dl>
 
           <div className="mt-6 pt-2">
-            <Button onClick={onRegister} withArrow className="w-full justify-center">
-              {t('register')}
-            </Button>
+            {klass.soldOut ? (
+              <Button
+                variant="outline"
+                disabled
+                className="w-full justify-center uppercase tracking-widest"
+              >
+                {tCommon('soldOut')}
+              </Button>
+            ) : (
+              <Button onClick={onRegister} withArrow className="w-full justify-center">
+                {t('register')}
+              </Button>
+            )}
           </div>
         </div>
       </motion.article>

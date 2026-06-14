@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { localized, type ClassRow, type ClassType } from '@/lib/types';
+import type { ClassType } from '@/lib/types';
 import type { PaymentDetails } from '@/lib/payment';
 import type { Locale } from '@/i18n/routing';
 import { formatPrice } from '@/lib/format';
@@ -14,8 +14,21 @@ import { Field, FieldError, Input, Label, Select, Textarea } from '@/components/
 import { CloseIcon, CopyIcon, CheckIcon } from '@/components/ui/Icons';
 import { clsx } from '@/lib/clsx';
 
+/** What the visitor is registering for: a class (with online/in-person type and
+ *  price-on-request behaviour) or an event (where no price means free). */
+export interface RegistrationTarget {
+  id: string;
+  kind: 'class' | 'event';
+  title: string;
+  price: number | null;
+  currency: string | null;
+  type?: ClassType;
+  /** When true, a missing price means "free"; when false, it means "on request". */
+  freeIfNoPrice: boolean;
+}
+
 interface Props {
-  klass: ClassRow;
+  target: RegistrationTarget;
   payment: PaymentDetails;
   contactEmail: string;
   onClose: () => void;
@@ -26,7 +39,7 @@ type Errors = Partial<Record<ErrorKey, string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Props) {
+export function RegistrationDialog({ target, payment, contactEmail, onClose }: Props) {
   const t = useTranslations('Registration');
   const tc = useTranslations('Classes');
   const tCommon = useTranslations('Common');
@@ -36,16 +49,20 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
   const [status, setStatus] = useState<'form' | 'submitting' | 'success' | 'error'>('form');
   const [errors, setErrors] = useState<Errors>({});
   const [copied, setCopied] = useState(false);
-  const [type, setType] = useState<ClassType>(klass.type);
+  const [type, setType] = useState<ClassType>(target.type ?? 'online');
   const [country, setCountry] = useState('');
 
-  const title = localized(klass, 'title', locale);
-  const hasPrice = klass.price != null;
-  const priceLabel = formatPrice(klass.price, klass.currency ?? payment.currency, locale);
-
-  // Turkey with a set price uses the IBAN bank transfer. Everyone else (or any
-  // class with no fixed price) routes to the "Kambiz will contact you" flow.
+  const hasPrice = target.price != null && target.price > 0;
+  const isFree = !hasPrice && target.freeIfNoPrice;
+  const priceLabel = formatPrice(target.price, target.currency ?? payment.currency, locale);
   const usesIban = hasPrice && countryUsesIban(country) && !!payment.iban;
+  const isClass = target.kind === 'class';
+
+  const headerPrice = hasPrice
+    ? priceLabel
+    : isFree
+      ? tCommon('free')
+      : tc('priceOnRequest');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +72,7 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
     const phone = String(form.get('phone') ?? '').trim();
     const instagram = String(form.get('instagram') ?? '').trim();
     const message = String(form.get('message') ?? '').trim();
-    const preferred = String(form.get('preferredType') ?? '') as ClassType;
+    const preferred = (isClass ? String(form.get('preferredType') ?? '') : 'online') as ClassType;
 
     const next: Errors = {};
     if (!fullName) next.fullName = t('validation.fullName');
@@ -63,7 +80,7 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
     if (!phone) next.phone = t('validation.phone');
     if (!instagram) next.instagram = t('validation.instagram');
     if (!country) next.country = t('validation.country');
-    if (preferred !== 'online' && preferred !== 'in_person')
+    if (isClass && preferred !== 'online' && preferred !== 'in_person')
       next.type = t('validation.type');
     setErrors(next);
     if (Object.keys(next).length > 0) return;
@@ -72,7 +89,8 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
     try {
       const supabase = createClient();
       const { error } = await supabase.from('registrations').insert({
-        class_id: klass.id,
+        class_id: isClass ? target.id : null,
+        event_id: isClass ? null : target.id,
         full_name: fullName,
         email,
         phone,
@@ -128,9 +146,18 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
           </button>
 
           {status === 'success' ? (
-            usesIban ? (
+            isFree ? (
+              <ResultPanel
+                heading={t('freeTitle')}
+                body={t('freeBody')}
+                title={target.title}
+                priceLabel={null}
+                note={t('requestContact', { email: contactEmail })}
+                onDone={onClose}
+              />
+            ) : usesIban ? (
               <IbanPanel
-                title={title}
+                title={target.title}
                 payment={payment}
                 priceLabel={priceLabel}
                 contactEmail={contactEmail}
@@ -139,10 +166,12 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                 onDone={onClose}
               />
             ) : (
-              <RequestPanel
-                title={title}
+              <ResultPanel
+                heading={t('requestTitle')}
+                body={t('requestBody')}
+                title={target.title}
                 priceLabel={priceLabel}
-                contactEmail={contactEmail}
+                note={t('requestContact', { email: contactEmail })}
                 onDone={onClose}
               />
             )
@@ -157,9 +186,8 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                 {t('title')}
               </h2>
               <p className="mt-1.5 text-sm text-bone/60">
-                {t('forClass')}: <span className="text-bone">{title}</span>{' '}
-                · {tc('price')}:{' '}
-                <span className="text-bone">{priceLabel ?? tc('priceOnRequest')}</span>
+                {t('forClass')}: <span className="text-bone">{target.title}</span>{' '}
+                · {tc('price')}: <span className="text-bone">{headerPrice}</span>
               </p>
 
               <div className="mt-6 space-y-4">
@@ -207,16 +235,18 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                   </Field>
                 </div>
 
-                <Field>
-                  <Label htmlFor="preferredType" required>{t('preferredType')}</Label>
-                  <Select id="preferredType" name="preferredType" value={type}
-                    onChange={(e) => setType(e.target.value as ClassType)}
-                    aria-invalid={!!errors.type}>
-                    <option value="online">{tc('online')}</option>
-                    <option value="in_person">{tc('inPerson')}</option>
-                  </Select>
-                  <FieldError>{errors.type}</FieldError>
-                </Field>
+                {isClass && (
+                  <Field>
+                    <Label htmlFor="preferredType" required>{t('preferredType')}</Label>
+                    <Select id="preferredType" name="preferredType" value={type}
+                      onChange={(e) => setType(e.target.value as ClassType)}
+                      aria-invalid={!!errors.type}>
+                      <option value="online">{tc('online')}</option>
+                      <option value="in_person">{tc('inPerson')}</option>
+                    </Select>
+                    <FieldError>{errors.type}</FieldError>
+                  </Field>
+                )}
 
                 <Field>
                   <Label htmlFor="message" hint={tCommon('optional')}>
@@ -319,16 +349,20 @@ function IbanPanel({
   );
 }
 
-/** Outside Turkey, or no fixed price: Kambiz makes contact to arrange payment. */
-function RequestPanel({
+/** Used for the "Kambiz will contact you" flow and for free registrations. */
+function ResultPanel({
+  heading,
+  body,
   title,
   priceLabel,
-  contactEmail,
+  note,
   onDone,
 }: {
+  heading: string;
+  body: string;
   title: string;
   priceLabel: string | null;
-  contactEmail: string;
+  note: string;
   onDone: () => void;
 }) {
   const t = useTranslations('Registration');
@@ -338,10 +372,8 @@ function RequestPanel({
       <div className="mb-3 grid h-11 w-11 place-items-center rounded-full bg-brick/10 text-brick">
         <CheckIcon className="h-5 w-5" />
       </div>
-      <h2 className="text-2xl font-semibold tracking-tightest text-bone">
-        {t('requestTitle')}
-      </h2>
-      <p className="prose-body mt-2 text-bone/75">{t('requestBody')}</p>
+      <h2 className="text-2xl font-semibold tracking-tightest text-bone">{heading}</h2>
+      <p className="prose-body mt-2 text-bone/75">{body}</p>
 
       <dl className="mt-6 divide-y divide-seam overflow-hidden rounded-plate bg-plate shadow-snap">
         <Row label={t('forClass')} value={title} />
@@ -349,7 +381,7 @@ function RequestPanel({
       </dl>
 
       <p className="mt-5 rounded-[10px] border border-seam bg-ink p-4 text-sm text-bone/75">
-        {t('requestContact', { email: contactEmail })}
+        {note}
       </p>
 
       <div className="mt-6">
