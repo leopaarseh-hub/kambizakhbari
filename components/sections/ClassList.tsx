@@ -102,7 +102,7 @@ function ClassCard({
           {klass.soldOut && <SoldOutOverlay label={tCommon('soldOut')} />}
           <span
             className={clsx(
-              'absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium backdrop-blur',
+              'absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
               isOnline ? 'bg-ink/80 text-bone' : 'bg-brick text-bone',
             )}
           >

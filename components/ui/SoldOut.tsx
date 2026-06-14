@@ -9,7 +9,7 @@ export function SoldOutOverlay({ label }: { label: string }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-10">
       {/* darken the photo so the stamp reads clearly */}
-      <div className="absolute inset-0 bg-ink/55 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-ink/60" />
 
       {/* corner ribbon */}
       <div className="absolute -start-12 top-5 -rotate-45">

@@ -107,7 +107,7 @@ export function Header() {
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-seam/70 bg-ink/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-seam/70 bg-ink/95">
       <div className="shell flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Kambiz Akhbari">
           <Wordmark className="h-7 w-auto text-bone" name={tMeta('siteName')} />

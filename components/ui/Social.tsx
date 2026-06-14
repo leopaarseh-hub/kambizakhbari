@@ -46,7 +46,7 @@ export function SocialLinks({
             aria-label={s.label}
             {...(s.external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
             className={clsx(
-              'group relative grid place-items-center overflow-hidden rounded-[14px] border border-bone/15 bg-bone/[0.04] text-bone backdrop-blur transition-all duration-300 ease-snap hover:-translate-y-1',
+              'group relative grid place-items-center overflow-hidden rounded-[14px] border border-bone/15 bg-bone/[0.06] text-bone transition-all duration-300 ease-snap hover:-translate-y-1',
               dim,
             )}
             style={{ ['--brand' as string]: s.brand }}

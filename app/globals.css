@@ -212,12 +212,11 @@
       0 16px 34px rgb(0 0 0 / 0.5);
   }
 
-  /* Frosted reading panel for longer copy that would otherwise sit directly
-     over the moving background. Keeps text on a calm, legible surface while the
-     colour still glows softly through. */
+  /* Reading panel for longer copy over the moving background. Solid (no
+     backdrop blur) so scrolling stays smooth: a translucent blur here would be
+     re-rasterised every frame as the page scrolls over the fixed scene. */
   .reading-panel {
-    background-color: rgb(var(--color-plate) / 0.72);
-    backdrop-filter: blur(10px);
+    background-color: rgb(var(--color-plate) / 0.96);
     border: 1px solid rgb(255 255 255 / 0.05);
     border-radius: var(--plate-radius);
   }
@@ -321,4 +320,26 @@
 
 .ka-page-in {
   animation: ka-page-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Scroll progress bar driven entirely by the scroll position in CSS (no
+   JavaScript on scroll). Hidden gracefully where scroll timelines are not
+   supported. */
+@keyframes ka-scalex {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.ka-scroll-progress {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+@supports (animation-timeline: scroll()) {
+  .ka-scroll-progress {
+    animation: ka-scalex linear both;
+    animation-timeline: scroll(root block);
+  }
 }

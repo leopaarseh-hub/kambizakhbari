@@ -94,7 +94,7 @@ export function SiteBackground() {
               left: p.left,
               width: p.size,
               opacity: p.opacity,
-              filter: 'drop-shadow(0 16px 20px rgba(0,0,0,0.45))',
+              filter: 'drop-shadow(0 5px 6px rgba(0,0,0,0.35))',
               animationName: 'ka-float',
               animationDuration: `${p.duration}s`,
               animationTimingFunction: 'ease-in-out',
@@ -120,7 +120,7 @@ export function SiteBackground() {
           style={{
             top: s.top,
             width: s.size,
-            filter: 'drop-shadow(0 18px 24px rgba(0,0,0,0.5))',
+            filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.4))',
             animationName: s.dir === 1 ? 'ka-fly-ltr' : 'ka-fly-rtl',
             animationDuration: `${s.duration}s`,
             animationTimingFunction: 'linear',

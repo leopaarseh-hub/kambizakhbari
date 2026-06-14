@@ -110,7 +110,7 @@ function EventGroup({
                   <PlateImage src={event.image_url} alt={title}
                     sizes="(max-width: 768px) 100vw, 33vw" />
                   {event.soldOut && <SoldOutOverlay label={tCommon('soldOut')} />}
-                  <span className="absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full bg-ink/80 px-3 py-1 text-xs font-medium text-bone backdrop-blur">
+                  <span className="absolute top-3 start-3 z-20 inline-flex items-center gap-1.5 rounded-full bg-ink/90 px-3 py-1 text-xs font-medium text-bone">
                     <span className="h-1.5 w-1.5 rounded-full bg-brick" />
                     {priceLabel}
                   </span>

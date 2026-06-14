@@ -76,7 +76,7 @@ export function LegoScene({
               bottom: p.bottom,
               width: p.size,
               opacity: p.opacity ?? 1,
-              filter: 'drop-shadow(0 16px 20px rgba(0,0,0,0.4))',
+              filter: 'drop-shadow(0 5px 6px rgba(0,0,0,0.3))',
               animationName: 'ka-float',
               animationDuration: `${p.duration}s`,
               animationTimingFunction: 'ease-in-out',

@@ -30,7 +30,7 @@ export function AdminNav({ email }: { email: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-seam bg-ink/85 text-bone backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-seam bg-ink/95 text-bone">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
         <div className="flex items-center gap-2">
           <BrickMark className="h-6 w-auto text-bone" />
