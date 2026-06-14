@@ -6,8 +6,10 @@ import { PlateImage } from '@/components/ui/PlateImage';
 import { Stud } from '@/components/ui/Stud';
 import { ButtonLink } from '@/components/ui/Button';
 
-// Biography portrait slot. Drop the provided portrait here.
-const ABOUT_PORTRAIT = '/images/about-portrait.jpg';
+// Biography portrait. Drop a file at public/images/about-portrait.jpg, or set
+// NEXT_PUBLIC_ABOUT_PORTRAIT to a hosted image URL.
+const ABOUT_PORTRAIT =
+  process.env.NEXT_PUBLIC_ABOUT_PORTRAIT || '/images/about-portrait.jpg';
 
 export async function generateMetadata({
   params,

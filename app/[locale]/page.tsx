@@ -10,9 +10,11 @@ import { teaserWork } from '@/lib/work';
 import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
 
-// The hero portrait slot. Drop the provided portrait here to replace the
-// branded placeholder. See docs/IMAGE_MANIFEST.md.
-const HERO_PORTRAIT = '/images/hero-portrait.jpg';
+// The hero portrait. Either drop a file at public/images/hero-portrait.jpg, or
+// set NEXT_PUBLIC_HERO_PORTRAIT to a hosted image URL (e.g. a Supabase Storage
+// public URL). The env var wins so the photo can be set without a commit.
+const HERO_PORTRAIT =
+  process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/hero-portrait.jpg';
 
 export default async function HomePage({
   params,
