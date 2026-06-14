@@ -6,7 +6,6 @@ import { routing, localeDirection, type Locale } from '@/i18n/routing';
 import { fontVariables } from '@/lib/fonts';
 import { Header } from '@/components/sections/Header';
 import { Footer } from '@/components/sections/Footer';
-import { Loader } from '@/components/motion/Loader';
 import { ScrollProgress } from '@/components/motion/ScrollProgress';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { SiteBackground } from '@/components/motion/SiteBackground';
@@ -86,7 +85,6 @@ export default async function LocaleLayout({
             Skip to content
           </a>
           <SiteBackground />
-          <Loader />
           <ScrollProgress />
           <Header />
           <main id="main">

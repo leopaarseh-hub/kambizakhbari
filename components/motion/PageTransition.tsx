@@ -1,32 +1,20 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { pageTransition } from './variants';
 
 /**
- * Smooth modular wipe between routes. Keyed on the pathname so each navigation
- * animates the new plate in. Reduced motion renders without transition.
+ * Page enter animation that is safe for the App Router. Each route renders in a
+ * wrapper keyed by pathname, so React remounts it and a lightweight CSS
+ * keyframe fades the new page in. There is no AnimatePresence and no exit
+ * "wait" phase, which is what previously stranded new pages until a reload.
+ * The reduced-motion rule in globals.css neutralises the animation.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const reduce = useReducedMotion();
-
-  if (reduce) return <>{children}</>;
-
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        variants={pageTransition}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="min-h-[60vh]"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div key={pathname} className="ka-page-in">
+      {children}
+    </div>
   );
 }

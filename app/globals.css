@@ -206,3 +206,75 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ===========================================================================
+   Ambient LEGO motion, driven entirely by CSS keyframes so it runs on the
+   compositor (GPU), never blocks the main thread, and stays smooth on every
+   page. Amplitudes are passed per element via --fl (float px) and --sp (spin
+   deg). Disabled automatically by the reduced-motion rule above.
+   =========================================================================== */
+@keyframes ka-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0, calc(var(--fl, 16) * -1px), 0)
+      rotate(calc(var(--sp, 10) * 1deg));
+  }
+  50% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(0, calc(var(--fl, 16) * 0.5px), 0)
+      rotate(calc(var(--sp, 10) * -0.6deg));
+  }
+}
+
+@keyframes ka-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+}
+
+@keyframes ka-fly-ltr {
+  from {
+    transform: translate3d(-18vw, 0, 0);
+  }
+  to {
+    transform: translate3d(118vw, 0, 0);
+  }
+}
+
+@keyframes ka-fly-rtl {
+  from {
+    transform: translate3d(118vw, 0, 0);
+  }
+  to {
+    transform: translate3d(-18vw, 0, 0);
+  }
+}
+
+.ka-anim {
+  will-change: transform;
+}
+
+/* Gentle page-enter, re-triggered per route. Never blocks navigation. */
+@keyframes ka-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ka-page-in {
+  animation: ka-page-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}

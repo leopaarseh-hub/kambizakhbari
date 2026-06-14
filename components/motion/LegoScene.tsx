@@ -1,6 +1,4 @@
-'use client';
-
-import { motion, useReducedMotion } from 'framer-motion';
+import type { CSSProperties } from 'react';
 import { LegoBrick } from '@/components/ui/LegoBrick';
 import { Astronaut } from '@/components/ui/Astronaut';
 
@@ -13,7 +11,6 @@ const CYAN = '#22B8CF';
 
 type Piece = {
   kind: 'brick' | 'astronaut';
-  /** position as CSS inset percentages */
   top?: string;
   left?: string;
   right?: string;
@@ -22,11 +19,10 @@ type Piece = {
   color?: string;
   visor?: string;
   studs?: 2 | 3 | 4;
-  float: number; // vertical travel in px
-  spin: number; // rotation amplitude in deg
+  float: number;
+  spin: number;
   duration: number;
   delay: number;
-  z?: number;
   opacity?: number;
 };
 
@@ -49,11 +45,10 @@ const ambientPieces: Piece[] = [
 ];
 
 /**
- * A living LEGO world that drifts behind content: colourful bricks and
- * astronaut minifigures that bob, spin gently, and parallax. The motion runs on
- * GPU transforms only and is fully disabled under prefers-reduced-motion, where
- * the pieces simply rest in place. It is decorative, so pointer events are off
- * and it never sits directly under reading text.
+ * A living LEGO scene behind a section: colourful bricks and astronauts that
+ * bob and spin via pure-CSS keyframes (compositor driven, no client JS). It is
+ * decorative, so pointer events are off, and the reduced-motion rule in
+ * globals.css freezes it for users who prefer no motion.
  */
 export function LegoScene({
   variant = 'hero',
@@ -62,7 +57,6 @@ export function LegoScene({
   variant?: 'hero' | 'ambient';
   className?: string;
 }) {
-  const reduce = useReducedMotion();
   const pieces = variant === 'hero' ? heroPieces : ambientPieces;
 
   return (
@@ -70,47 +64,36 @@ export function LegoScene({
       aria-hidden
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
     >
-      {pieces.map((p, i) => {
-        const style: React.CSSProperties = {
-          position: 'absolute',
-          top: p.top,
-          left: p.left,
-          right: p.right,
-          bottom: p.bottom,
-          width: p.size,
-          zIndex: p.z ?? 0,
-          opacity: p.opacity ?? 1,
-          willChange: 'transform',
-          filter: 'drop-shadow(0 18px 22px rgba(0,0,0,0.28))',
-        };
-
-        const animate = reduce
-          ? undefined
-          : {
-              y: [0, -p.float, 0, p.float * 0.5, 0],
-              rotate: [0, p.spin, 0, -p.spin * 0.6, 0],
-            };
-
-        return (
-          <motion.div
-            key={i}
-            style={style}
-            animate={animate}
-            transition={{
-              duration: p.duration,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: p.delay,
-            }}
-          >
-            {p.kind === 'brick' ? (
-              <LegoBrick color={p.color} studs={p.studs ?? 2} className="w-full" />
-            ) : (
-              <Astronaut visor={p.visor} className="w-full" />
-            )}
-          </motion.div>
-        );
-      })}
+      {pieces.map((p, i) => (
+        <div
+          key={i}
+          className="ka-anim absolute"
+          style={
+            {
+              top: p.top,
+              left: p.left,
+              right: p.right,
+              bottom: p.bottom,
+              width: p.size,
+              opacity: p.opacity ?? 1,
+              filter: 'drop-shadow(0 16px 20px rgba(0,0,0,0.4))',
+              animationName: 'ka-float',
+              animationDuration: `${p.duration}s`,
+              animationTimingFunction: 'ease-in-out',
+              animationIterationCount: 'infinite',
+              animationDelay: `${p.delay}s`,
+              '--fl': p.float,
+              '--sp': p.spin,
+            } as CSSProperties
+          }
+        >
+          {p.kind === 'brick' ? (
+            <LegoBrick color={p.color} studs={p.studs ?? 2} className="w-full" />
+          ) : (
+            <Astronaut visor={p.visor} className="w-full" />
+          )}
+        </div>
+      ))}
     </div>
   );
 }
