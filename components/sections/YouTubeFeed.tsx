@@ -39,7 +39,7 @@ async function fetchVideos(): Promise<Video[]> {
   try {
     const res = await fetch(
       `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`,
-      { next: { revalidate: 1800 } },
+      { next: { revalidate: 300 } },
     );
     if (!res.ok) return [];
     const xml = await res.text();
@@ -57,9 +57,11 @@ async function fetchVideos(): Promise<Video[]> {
         published,
         views: viewsStr ? Number(viewsStr) : null,
       });
-      if (videos.length >= 7) break;
     }
-    return videos;
+    // Always sort newest first by publish date, regardless of feed order, so
+    // the featured video is genuinely the most recent upload.
+    videos.sort((a, b) => (b.published ?? '').localeCompare(a.published ?? ''));
+    return videos.slice(0, 7);
   } catch {
     return [];
   }
