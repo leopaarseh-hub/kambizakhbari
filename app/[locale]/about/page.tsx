@@ -8,9 +8,9 @@ import { ButtonLink } from '@/components/ui/Button';
 import { getSettings } from '@/lib/queries';
 
 // Biography portrait resolution order: photo uploaded in the admin panel >
-// NEXT_PUBLIC_ABOUT_PORTRAIT env URL > local public/images file.
+// NEXT_PUBLIC_ABOUT_PORTRAIT env URL > the file committed under public/images.
 function aboutPortrait(url: string | null | undefined): string {
-  return url || process.env.NEXT_PUBLIC_ABOUT_PORTRAIT || '/images/about-portrait.jpg';
+  return url || process.env.NEXT_PUBLIC_ABOUT_PORTRAIT || '/images/kambiz-biography.webp';
 }
 
 export async function generateMetadata({
