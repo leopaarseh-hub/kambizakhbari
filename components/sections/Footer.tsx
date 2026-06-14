@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { InstagramIcon, MailIcon } from '@/components/ui/Icons';
 import { BrickMark } from '@/components/ui/Wordmark';
 import { StudSeam } from '@/components/ui/Stud';
+import { SocialLinks } from '@/components/ui/Social';
 import { LegoScene } from '@/components/motion/LegoScene';
 
 const navItems = [
@@ -13,7 +13,6 @@ const navItems = [
   { href: '/contact', key: 'contact' },
 ] as const;
 
-const INSTAGRAM_URL = 'https://instagram.com/kambiz';
 const EMAIL = 'Info@kambizakhbari.com';
 
 export function Footer() {
@@ -60,32 +59,14 @@ export function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold text-bone/50">{t('connectTitle')}</h3>
-            <ul className="mt-4 space-y-3">
-              <li>
-                <a
-                  href={INSTAGRAM_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="group inline-flex items-center gap-3 text-bone/80 transition-colors hover:text-bone"
-                >
-                  <span className="grid h-9 w-9 place-items-center rounded-[10px] border border-bone/20 transition-colors group-hover:border-brick group-hover:text-brick">
-                    <InstagramIcon className="h-5 w-5" />
-                  </span>
-                  {t('instagram')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="group inline-flex items-center gap-3 text-bone/80 transition-colors hover:text-bone"
-                >
-                  <span className="grid h-9 w-9 place-items-center rounded-[10px] border border-bone/20 transition-colors group-hover:border-brick group-hover:text-brick">
-                    <MailIcon className="h-5 w-5" />
-                  </span>
-                  {EMAIL}
-                </a>
-              </li>
-            </ul>
+            <SocialLinks className="mt-4" />
+            <a
+              href={`mailto:${EMAIL}`}
+              className="mt-4 inline-block text-sm text-bone/70 transition-colors hover:text-bone"
+              dir="ltr"
+            >
+              {EMAIL}
+            </a>
           </div>
         </div>
 

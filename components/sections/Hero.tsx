@@ -7,6 +7,7 @@ import { heroBrick, snapEase } from '@/components/motion/variants';
 import { LegoScene } from '@/components/motion/LegoScene';
 import { ButtonLink } from '@/components/ui/Button';
 import { BrickMark } from '@/components/ui/Wordmark';
+import { SocialLinks } from '@/components/ui/Social';
 
 /**
  * Cinematic hero on a deep ink stage. A living LEGO world of colourful bricks
@@ -82,6 +83,10 @@ export function Hero({ portraitSrc }: { portraitSrc?: string }) {
             >
               {t('bioCta')}
             </ButtonLink>
+          </motion.div>
+
+          <motion.div variants={reduce ? undefined : heroBrick} custom={4} className="mt-8">
+            <SocialLinks size="lg" />
           </motion.div>
         </motion.div>
 
