@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ButtonLink } from '@/components/ui/Button';
@@ -8,30 +7,59 @@ import { BrickMark } from '@/components/ui/Wordmark';
 interface IgPost {
   id: string;
   caption?: string;
-  media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM';
-  media_url: string;
-  thumbnail_url?: string;
+  image: string;
   permalink: string;
 }
 
 const HANDLE = process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE ?? 'kambiz';
 const PROFILE_URL = `https://instagram.com/${HANDLE}`;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function normalize(json: any): IgPost[] {
+  // Accept the Instagram Graph API shape ({ data: [...] }), a hosted feed
+  // service shape ({ posts: [...] }, e.g. Behold), or a bare array.
+  const items: any[] = Array.isArray(json)
+    ? json
+    : json?.data ?? json?.posts ?? [];
+  return items
+    .map((p) => {
+      const isVideo = (p.media_type ?? p.mediaType) === 'VIDEO';
+      const image = isVideo
+        ? p.thumbnail_url ?? p.thumbnailUrl ?? p.media_url ?? p.mediaUrl
+        : p.media_url ?? p.mediaUrl ?? p.thumbnail_url ?? p.thumbnailUrl ?? p.sizes?.medium?.mediaUrl;
+      return {
+        id: String(p.id ?? p.permalink ?? image ?? Math.random()),
+        caption: p.caption ?? p.prunedCaption,
+        image,
+        permalink: p.permalink ?? PROFILE_URL,
+      } as IgPost;
+    })
+    .filter((p) => Boolean(p.image))
+    .slice(0, 6);
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 /**
- * Fetches the latest Instagram posts using a long-lived access token. Returns
- * an empty list (so the section falls back to a follow card) whenever the token
- * is missing or the request fails, so the page never breaks.
+ * Loads the latest Instagram posts. Two sources are supported, in order:
+ *  1. INSTAGRAM_FEED_URL: a hosted JSON feed (e.g. Behold.so) — easiest, no
+ *     token management.
+ *  2. INSTAGRAM_ACCESS_TOKEN: the official Instagram Graph API.
+ * Returns an empty list (so a follow card shows) when neither is configured or
+ * a request fails, so the page never breaks.
  */
 async function fetchPosts(): Promise<IgPost[]> {
+  const feedUrl = process.env.INSTAGRAM_FEED_URL;
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
-  if (!token) return [];
+  const url = feedUrl
+    ? feedUrl
+    : token
+      ? `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink&limit=6&access_token=${token}`
+      : null;
+  if (!url) return [];
   try {
-    const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink';
-    const url = `https://graph.instagram.com/me/media?fields=${fields}&limit=6&access_token=${token}`;
     const res = await fetch(url, { next: { revalidate: 1800 } });
     if (!res.ok) return [];
-    const json = (await res.json()) as { data?: IgPost[] };
-    return (json.data ?? []).filter((p) => p.media_url || p.thumbnail_url).slice(0, 6);
+    return normalize(await res.json());
   } catch {
     return [];
   }
@@ -52,31 +80,28 @@ export async function InstagramFeed() {
 
       {posts.length > 0 ? (
         <ul className="mt-12 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
-          {posts.map((post) => {
-            const src =
-              post.media_type === 'VIDEO' ? post.thumbnail_url ?? post.media_url : post.media_url;
-            return (
-              <li key={post.id}>
-                <a
-                  href={post.permalink}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="group relative block aspect-square overflow-hidden rounded-plate bg-ink shadow-snap"
-                >
-                  <Image
-                    src={src}
-                    alt={post.caption?.slice(0, 120) ?? 'Instagram post'}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                  <span className="absolute inset-0 grid place-items-center bg-ink/0 text-bone opacity-0 transition-all duration-300 group-hover:bg-ink/40 group-hover:opacity-100">
-                    <InstagramIcon className="h-7 w-7" />
-                  </span>
-                </a>
-              </li>
-            );
-          })}
+          {posts.map((post) => (
+            <li key={post.id}>
+              <a
+                href={post.permalink}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="group relative block aspect-square overflow-hidden rounded-plate bg-ink shadow-snap"
+              >
+                {/* External CDN images: a plain img keeps any host working. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={post.image}
+                  alt={post.caption?.slice(0, 120) ?? 'Instagram post'}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                />
+                <span className="absolute inset-0 grid place-items-center bg-ink/0 text-bone opacity-0 transition-all duration-300 group-hover:bg-ink/40 group-hover:opacity-100">
+                  <InstagramIcon className="h-7 w-7" />
+                </span>
+              </a>
+            </li>
+          ))}
         </ul>
       ) : (
         <FollowCard cta={t('instagramCta')} />
@@ -85,7 +110,7 @@ export async function InstagramFeed() {
   );
 }
 
-/** Premium fallback shown when no Instagram token is configured. */
+/** Premium fallback shown when no Instagram source is configured. */
 function FollowCard({ cta }: { cta: string }) {
   return (
     <div className="mt-12 overflow-hidden rounded-plate bg-plate shadow-snap">
@@ -106,7 +131,6 @@ function FollowCard({ cta }: { cta: string }) {
             </ButtonLink>
           </div>
         </div>
-        {/* a quiet row of brick-plate tiles for texture */}
         <div className="hidden grid-cols-3 gap-2 sm:grid">
           {Array.from({ length: 9 }).map((_, i) => (
             <span
