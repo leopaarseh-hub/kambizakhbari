@@ -7,6 +7,9 @@ import { Stud } from '@/components/ui/Stud';
 import { ButtonLink } from '@/components/ui/Button';
 import { getSettings } from '@/lib/queries';
 
+// ISR: cached and refreshed every 5 minutes, served from the edge.
+export const revalidate = 300;
+
 // Biography portrait resolution order: photo uploaded in the admin panel >
 // NEXT_PUBLIC_ABOUT_PORTRAIT env URL > the file committed under public/images.
 function aboutPortrait(url: string | null | undefined): string {

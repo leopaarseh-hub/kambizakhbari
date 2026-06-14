@@ -1,4 +1,4 @@
-import { createClient } from './supabase/server';
+import { createPublicClient } from './supabase/public';
 import type { ClassRow, EventRow, SettingsRow, WithSeats } from './types';
 
 /**
@@ -31,7 +31,7 @@ export function attachSeats<T extends { sold_out: boolean; capacity: number | nu
 
 export async function getActiveClasses(): Promise<WithSeats<ClassRow>[]> {
   if (!isSupabaseConfigured()) return [];
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const [{ data, error }, { data: counts }] = await Promise.all([
     supabase.from('classes').select('*').eq('active', true).order('created_at', { ascending: false }),
     supabase.from('class_seat_counts').select('*'),
@@ -48,7 +48,7 @@ export async function getActiveClasses(): Promise<WithSeats<ClassRow>[]> {
 
 export async function getActiveEvents(): Promise<WithSeats<EventRow>[]> {
   if (!isSupabaseConfigured()) return [];
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const [{ data, error }, { data: counts }] = await Promise.all([
     supabase.from('events').select('*').eq('active', true).order('event_date', { ascending: false }),
     supabase.from('event_seat_counts').select('*'),
@@ -65,7 +65,7 @@ export async function getActiveEvents(): Promise<WithSeats<EventRow>[]> {
 
 export async function getSettings(): Promise<SettingsRow | null> {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('settings')
     .select('*')

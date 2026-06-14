@@ -74,8 +74,22 @@ export default async function LocaleLayout({
 
   const dir = localeDirection[locale as Locale];
 
+  const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
   return (
     <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>
+      <head>
+        {/* Warm up connections to the hosts that serve images, so thumbnails
+            and uploaded photos start downloading sooner. */}
+        <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://i.ytimg.com" />
+        {supabaseOrigin && (
+          <>
+            <link rel="preconnect" href={supabaseOrigin} crossOrigin="" />
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+          </>
+        )}
+      </head>
       <body className="min-h-screen bg-ink antialiased">
         <NextIntlClientProvider>
           <a

@@ -11,8 +11,7 @@ import {
 import { resolvePaymentDetails } from '@/lib/payment';
 import { demoClasses } from '@/lib/demo';
 
-// Classes are dynamic from Supabase, so render on each request.
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: cached, refreshed every 5 minutes
 
 const CONTACT_EMAIL = 'Info@kambizakhbari.com';
 

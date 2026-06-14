@@ -11,7 +11,7 @@ import {
 import { resolvePaymentDetails } from '@/lib/payment';
 import { demoEvents } from '@/lib/demo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: cached, refreshed every 5 minutes
 
 const CONTACT_EMAIL = 'Info@kambizakhbari.com';
 

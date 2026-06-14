@@ -21,6 +21,10 @@ import { formatDate, formatPrice, isUpcoming } from '@/lib/format';
 import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
 
+// ISR: the home page is cached and refreshed every 5 minutes instead of being
+// rendered on every request, so it is served instantly from the edge.
+export const revalidate = 300;
+
 // Hero portrait resolution order: photo uploaded in the admin panel (stored in
 // settings) > NEXT_PUBLIC_HERO_PORTRAIT env URL > the file committed under
 // public/images.
