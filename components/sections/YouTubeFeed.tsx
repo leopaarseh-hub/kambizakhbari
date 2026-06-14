@@ -9,7 +9,7 @@ interface Video {
   title: string;
 }
 
-const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? '';
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? 'UC9MKFDzcbctBeyrwE0zZDsw';
 const CHANNEL_URL =
   process.env.NEXT_PUBLIC_YOUTUBE_URL ||
   (CHANNEL_ID ? `https://www.youtube.com/channel/${CHANNEL_ID}` : 'https://www.youtube.com');
