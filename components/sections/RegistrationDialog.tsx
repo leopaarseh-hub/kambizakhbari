@@ -123,12 +123,13 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[95] grid place-items-center overflow-y-auto bg-ink/80 p-4 backdrop-blur-sm"
+        className="fixed inset-0 z-[95] overflow-y-auto bg-ink/80 backdrop-blur-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
+        <div className="flex min-h-full items-center justify-center p-4">
         <motion.div
           role="dialog"
           aria-modal="true"
@@ -138,7 +139,7 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
           exit={reduce ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
           transition={{ duration: 0.32, ease: [0.2, 0.8, 0.2, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="relative my-8 w-full max-w-lg rounded-plate bg-ink p-6 shadow-snap-lg sm:p-8"
+          className="relative w-full max-w-lg rounded-plate bg-ink p-6 shadow-snap-lg sm:p-8"
         >
           <button
             onClick={onClose}
@@ -279,6 +280,7 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
             </form>
           )}
         </motion.div>
+        </div>
       </motion.div>
     </AnimatePresence>
   );

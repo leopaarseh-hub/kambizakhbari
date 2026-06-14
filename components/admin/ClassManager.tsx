@@ -200,10 +200,11 @@ function Editor({
   const t = useTranslations('Admin.classes');
   const tc = useTranslations('Common');
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/70 p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-ink/70">
+      <div className="flex min-h-full items-center justify-center p-4">
       <form
         onSubmit={onSubmit}
-        className="my-8 w-full max-w-2xl rounded-plate bg-ink p-6 shadow-snap-lg"
+        className="w-full max-w-2xl rounded-plate bg-ink p-6 shadow-snap-lg"
       >
         <h2 className="text-xl font-semibold tracking-tightest text-bone">
           {draft.id ? t('edit') : t('new')}
@@ -277,6 +278,7 @@ function Editor({
           </Button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

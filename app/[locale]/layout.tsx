@@ -10,6 +10,7 @@ import { ScrollProgress } from '@/components/motion/ScrollProgress';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { SiteBackground } from '@/components/motion/SiteBackground';
 import { ChromeGate } from '@/components/sections/ChromeGate';
+import { CookieConsent } from '@/components/ui/CookieConsent';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -107,6 +108,7 @@ export default async function LocaleLayout({
           <ChromeGate>
             <Footer />
           </ChromeGate>
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

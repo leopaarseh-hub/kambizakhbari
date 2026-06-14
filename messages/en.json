@@ -295,5 +295,11 @@
     "title": "Page not found",
     "body": "This plate is not part of the build.",
     "home": "Back to home"
+  },
+  "Cookie": {
+    "title": "Cookies",
+    "message": "We use a few cookies to keep the site running smoothly and to remember your preferences.",
+    "accept": "Accept",
+    "reject": "Reject"
   }
 }
