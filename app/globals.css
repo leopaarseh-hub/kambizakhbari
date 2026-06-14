@@ -43,6 +43,20 @@
     font-feature-settings: 'kern', 'liga', 'calt';
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Universal halo so any text stays readable over the moving LEGO stage. */
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.45), 0 2px 10px rgb(0 0 0 / 0.3);
+  }
+
+  /* Text sitting on a solid plate has its own contrast, so the halo is dropped
+     there to keep it crisp and clean. Form controls and code are exempt too. */
+  .plate,
+  .reading-panel,
+  input,
+  textarea,
+  select,
+  code,
+  .font-mono {
+    text-shadow: none;
   }
 
   /* Persian locale tunes line-height and weight for comfortable reading. */
@@ -60,6 +74,14 @@
     letter-spacing: -0.02em;
     line-height: 1.04;
     text-wrap: balance;
+    /* Stronger halo on titles, which are the largest floating elements. */
+    text-shadow: 0 2px 4px rgb(0 0 0 / 0.55), 0 6px 26px rgb(0 0 0 / 0.5);
+  }
+
+  /* On a plate the title needs no halo. */
+  .plate h1, .plate h2, .plate h3, .plate h4,
+  .reading-panel h1, .reading-panel h2, .reading-panel h3, .reading-panel h4 {
+    text-shadow: none;
   }
 
   /* Persian headings use Vazirmatn, which has no tight Latin tracking needs. */
@@ -181,7 +203,8 @@
   /* Keep headings crisp when they float over the animated LEGO background. A
      soft dark halo lifts bone text off any colourful piece behind it. */
   .text-legible {
-    text-shadow: 0 1px 2px rgb(0 0 0 / 0.55), 0 6px 24px rgb(0 0 0 / 0.5);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.7), 0 3px 8px rgb(0 0 0 / 0.55),
+      0 8px 30px rgb(0 0 0 / 0.5);
   }
 
   /* Frosted reading panel for longer copy that would otherwise sit directly
