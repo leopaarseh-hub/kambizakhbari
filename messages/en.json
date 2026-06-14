@@ -63,7 +63,10 @@
     "viewEvents": "All events",
     "instagramTitle": "Latest on Instagram",
     "instagramIntro": "A glimpse of recent work.",
-    "instagramCta": "Follow on Instagram"
+    "instagramCta": "Follow on Instagram",
+    "youtubeTitle": "Latest videos",
+    "youtubeIntro": "Recent films and music videos.",
+    "youtubeCta": "Watch on YouTube"
   },
   "About": {
     "title": "Biography",

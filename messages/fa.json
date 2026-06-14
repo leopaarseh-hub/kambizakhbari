@@ -63,7 +63,10 @@
     "viewEvents": "همه رویدادها",
     "instagramTitle": "تازه‌ترین‌ها در اینستاگرام",
     "instagramIntro": "نگاهی به کارهای اخیر.",
-    "instagramCta": "دنبال‌کردن در اینستاگرام"
+    "instagramCta": "دنبال‌کردن در اینستاگرام",
+    "youtubeTitle": "تازه‌ترین ویدیوها",
+    "youtubeIntro": "فیلم‌ها و نماهنگ‌های اخیر.",
+    "youtubeCta": "تماشا در یوتیوب"
   },
   "About": {
     "title": "بیوگرافی",

@@ -103,3 +103,20 @@ export function ChevronDownIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function YouTubeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden {...props}>
+      <rect x="2.5" y="6" width="19" height="12" rx="3.5" />
+      <path d="M10.5 9.3v5.4l4.5-2.7-4.5-2.7Z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function PlayIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden {...props}>
+      <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="currentColor" />
+    </svg>
+  );
+}
