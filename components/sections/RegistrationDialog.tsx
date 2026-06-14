@@ -47,6 +47,7 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
   const reduce = useReducedMotion();
 
   const [status, setStatus] = useState<'form' | 'submitting' | 'success' | 'error'>('form');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [copied, setCopied] = useState(false);
   const [type, setType] = useState<ClassType>(target.type ?? 'online');
@@ -86,6 +87,7 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
     if (Object.keys(next).length > 0) return;
 
     setStatus('submitting');
+    setErrorMsg(null);
     try {
       const supabase = createClient();
       const { error } = await supabase.from('registrations').insert({
@@ -102,7 +104,8 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
       });
       if (error) throw error;
       setStatus('success');
-    } catch {
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : String(err));
       setStatus('error');
     }
   }
@@ -261,6 +264,9 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
                 <div className="mt-4 rounded-[10px] border border-brick/40 bg-brick/5 p-4">
                   <p className="text-sm font-medium text-brick">{t('errorTitle')}</p>
                   <p className="mt-1 text-sm text-bone/70">{t('errorBody')}</p>
+                  {errorMsg && (
+                    <p className="mt-2 break-words text-xs text-bone/45">{errorMsg}</p>
+                  )}
                 </div>
               )}
 
