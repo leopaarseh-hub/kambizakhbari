@@ -11,6 +11,12 @@ This creates every table, the Row Level Security policies, and the public
 `media` storage bucket. To get sample classes and an event, also run
 `supabase/seed.sql` the same way (optional).
 
+> If you later see "Bucket not found" when uploading an image, the bucket was
+> not created (creating buckets via SQL is unreliable). Fix it in the dashboard:
+> **Storage → New bucket →** name it exactly **`media`** and turn **Public** on.
+> Then re-run `supabase/migrations/0002_fix_admin_write_policies.sql` so the
+> upload policies apply.
+
 ## 2. Create the admin user (Authentication → Users → Add user)
 
 Add one user with an email and password. This is the only login for `/admin`.

@@ -18,7 +18,15 @@ export async function uploadImage(
     cacheControl: '3600',
     upsert: false,
   });
-  if (error) throw error;
+  if (error) {
+    // The most common setup miss: the public bucket has not been created yet.
+    if (/bucket not found/i.test(error.message)) {
+      throw new Error(
+        `Storage bucket "${BUCKET}" was not found. Create it in Supabase: Storage > New bucket > name "${BUCKET}", set it to Public.`,
+      );
+    }
+    throw error;
+  }
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
