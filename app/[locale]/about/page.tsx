@@ -5,11 +5,13 @@ import { Reveal, Brick } from '@/components/motion/Reveal';
 import { PlateImage } from '@/components/ui/PlateImage';
 import { Stud } from '@/components/ui/Stud';
 import { ButtonLink } from '@/components/ui/Button';
+import { getSettings } from '@/lib/queries';
 
-// Biography portrait. Drop a file at public/images/about-portrait.jpg, or set
-// NEXT_PUBLIC_ABOUT_PORTRAIT to a hosted image URL.
-const ABOUT_PORTRAIT =
-  process.env.NEXT_PUBLIC_ABOUT_PORTRAIT || '/images/about-portrait.jpg';
+// Biography portrait resolution order: photo uploaded in the admin panel >
+// NEXT_PUBLIC_ABOUT_PORTRAIT env URL > local public/images file.
+function aboutPortrait(url: string | null | undefined): string {
+  return url || process.env.NEXT_PUBLIC_ABOUT_PORTRAIT || '/images/about-portrait.jpg';
+}
 
 export async function generateMetadata({
   params,
@@ -33,6 +35,8 @@ export default async function AboutPage({
 
   const body = t.raw('body') as string[];
   const facts = t.raw('facts') as Array<{ label: string; value: string }>;
+  const settings = await getSettings();
+  const ABOUT_PORTRAIT = aboutPortrait(settings?.about_image_url);
 
   return (
     <article className="pb-8">

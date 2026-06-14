@@ -29,6 +29,7 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
   const [rows, setRows] = useState<EventRow[]>(initial);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
   async function refresh() {
@@ -43,6 +44,7 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
     e.preventDefault();
     if (!draft) return;
     setSaving(true);
+    setError(null);
     try {
       const form = new FormData(e.currentTarget);
       let imageUrl = draft.image_url ?? null;
@@ -61,26 +63,41 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
         image_url: imageUrl,
         active: form.get('active') === 'on',
       };
-      if (draft.id) {
-        await supabase.from('events').update(payload).eq('id', draft.id);
-      } else {
-        await supabase.from('events').insert(payload);
+      const { error: dbError } = draft.id
+        ? await supabase.from('events').update(payload).eq('id', draft.id)
+        : await supabase.from('events').insert(payload);
+      if (dbError) {
+        setError(dbError.message);
+        return;
       }
       await refresh();
       setDraft(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
       setSaving(false);
     }
   }
 
   async function toggleActive(row: EventRow) {
-    await supabase.from('events').update({ active: !row.active }).eq('id', row.id);
+    const { error: dbError } = await supabase
+      .from('events')
+      .update({ active: !row.active })
+      .eq('id', row.id);
+    if (dbError) {
+      setError(dbError.message);
+      return;
+    }
     await refresh();
   }
 
   async function remove(row: EventRow) {
     if (!confirm(t('confirmDelete'))) return;
-    await supabase.from('events').delete().eq('id', row.id);
+    const { error: dbError } = await supabase.from('events').delete().eq('id', row.id);
+    if (dbError) {
+      setError(dbError.message);
+      return;
+    }
     await refresh();
   }
 
@@ -88,10 +105,21 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tightest text-bone">{t('title')}</h1>
-        <Button onClick={() => setDraft({ ...emptyDraft })}>
+        <Button
+          onClick={() => {
+            setError(null);
+            setDraft({ ...emptyDraft });
+          }}
+        >
           <PlusIcon className="h-4 w-4" /> {t('new')}
         </Button>
       </div>
+
+      {error && !draft && (
+        <div className="mb-4 rounded-[10px] border border-brick/40 bg-brick/10 p-3 text-sm text-bone">
+          {error}
+        </div>
+      )}
 
       {rows.length === 0 ? (
         <p className="rounded-plate border border-dashed border-seam bg-plate p-10 text-center text-bone/55">
@@ -131,7 +159,15 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
         </ul>
       )}
 
-      {draft && <Editor draft={draft} saving={saving} onClose={() => setDraft(null)} onSubmit={save} />}
+      {draft && (
+        <Editor
+          draft={draft}
+          saving={saving}
+          error={error}
+          onClose={() => setDraft(null)}
+          onSubmit={save}
+        />
+      )}
     </div>
   );
 }
@@ -139,11 +175,13 @@ export function EventManager({ initial }: { initial: EventRow[] }) {
 function Editor({
   draft,
   saving,
+  error,
   onClose,
   onSubmit,
 }: {
   draft: Draft;
   saving: boolean;
+  error: string | null;
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
@@ -193,6 +231,12 @@ function Editor({
             <span className="text-sm text-bone">{t('active')}</span>
           </label>
         </div>
+        {error && (
+          <div className="mt-5 rounded-[10px] border border-brick/40 bg-brick/10 p-3 text-sm text-bone">
+            {error}
+          </div>
+        )}
+
         <div className="mt-6 flex justify-end gap-3">
           <button type="button" onClick={onClose} className="rounded-full border border-seam px-4 py-2 text-sm">
             {tc('close')}

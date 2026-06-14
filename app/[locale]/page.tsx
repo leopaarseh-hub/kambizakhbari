@@ -7,14 +7,15 @@ import { Reveal, Brick } from '@/components/motion/Reveal';
 import { PlateImage } from '@/components/ui/PlateImage';
 import { StudSeam } from '@/components/ui/Stud';
 import { teaserWork } from '@/lib/work';
+import { getSettings } from '@/lib/queries';
 import type { Locale } from '@/i18n/routing';
 import { clsx } from '@/lib/clsx';
 
-// The hero portrait. Either drop a file at public/images/hero-portrait.jpg, or
-// set NEXT_PUBLIC_HERO_PORTRAIT to a hosted image URL (e.g. a Supabase Storage
-// public URL). The env var wins so the photo can be set without a commit.
-const HERO_PORTRAIT =
-  process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/hero-portrait.jpg';
+// Hero portrait resolution order: photo uploaded in the admin panel (stored in
+// settings) > NEXT_PUBLIC_HERO_PORTRAIT env URL > local public/images file.
+function heroPortrait(heroUrl: string | null | undefined): string {
+  return heroUrl || process.env.NEXT_PUBLIC_HERO_PORTRAIT || '/images/hero-portrait.jpg';
+}
 
 export default async function HomePage({
   params,
@@ -25,6 +26,8 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations('Home');
   const activeLocale = (await getLocale()) as Locale;
+  const settings = await getSettings();
+  const HERO_PORTRAIT = heroPortrait(settings?.hero_image_url);
 
   return (
     <>

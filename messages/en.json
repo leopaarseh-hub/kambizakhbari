@@ -247,7 +247,11 @@
       "accountHolder": "Account holder",
       "currency": "Default currency",
       "save": "Save settings",
-      "saved": "Settings saved"
+      "saved": "Settings saved",
+      "heroImage": "Hero photo",
+      "aboutImage": "Biography photo",
+      "imageHint": "upload to replace the current photo",
+      "current": "Current"
     }
   },
   "NotFound": {

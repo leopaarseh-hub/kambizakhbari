@@ -58,6 +58,8 @@ export interface SettingsRow {
   iban: string | null;
   account_holder: string | null;
   default_currency: string | null;
+  hero_image_url: string | null;
+  about_image_url: string | null;
 }
 
 /** Pick the field for the active locale from a bilingual record. */
