@@ -1,9 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import type { RegistrationRow, RegistrationStatus } from '@/lib/types';
+import type { Locale } from '@/i18n/routing';
+import { countryLabel } from '@/lib/countries';
 import { clsx } from '@/lib/clsx';
 
 type ClassTitles = Record<string, string>;
@@ -22,6 +24,7 @@ export function RegistrationsTable({
   classTitles: ClassTitles;
 }) {
   const t = useTranslations('Admin.registrations');
+  const locale = useLocale() as Locale;
   const [rows, setRows] = useState(initial);
   const [filter, setFilter] = useState<'all' | RegistrationStatus>('all');
   const supabase = createClient();
@@ -69,6 +72,13 @@ export function RegistrationsTable({
                 <div>
                   <p className="font-medium text-bone">{row.full_name}</p>
                   <p className="text-sm text-bone/60" dir="ltr">{row.email} · {row.phone}</p>
+                  {(row.instagram || row.country) && (
+                    <p className="mt-0.5 text-sm text-bone/55" dir="ltr">
+                      {row.instagram && <span>{row.instagram}</span>}
+                      {row.instagram && row.country && ' · '}
+                      {row.country && <span>{countryLabel(row.country, locale)}</span>}
+                    </p>
+                  )}
                   <p className="mt-1 text-sm text-bone/55">
                     {t('class')}: {row.class_id ? classTitles[row.class_id] ?? '—' : '—'} ·{' '}
                     {t('format')}: {row.preferred_type === 'online' ? 'online' : 'in person'}

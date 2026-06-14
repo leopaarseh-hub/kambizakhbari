@@ -107,13 +107,11 @@ function ClassCard({
           <p className="prose-body mt-2 line-clamp-4 text-bone/70">{description}</p>
 
           <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            {price && (
-              <div className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-brick" />
-                <dt className="text-bone/55">{t('price')}:</dt>
-                <dd className="font-medium text-bone">{price}</dd>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-brick" />
+              <dt className="text-bone/55">{t('price')}:</dt>
+              <dd className="font-medium text-bone">{price ?? t('priceOnRequest')}</dd>
+            </div>
             {klass.capacity != null && (
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-graphite/40" />

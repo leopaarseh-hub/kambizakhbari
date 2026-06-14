@@ -232,7 +232,7 @@ function Editor({
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field>
-              <Label htmlFor="price">{t('price')}</Label>
+              <Label htmlFor="price" hint={t('priceHint')}>{t('price')}</Label>
               <Input id="price" name="price" type="number" min="0" defaultValue={draft.price ?? ''} dir="ltr" />
             </Field>
             <Field>

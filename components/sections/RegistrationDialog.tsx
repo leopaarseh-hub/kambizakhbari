@@ -8,6 +8,7 @@ import { localized, type ClassRow, type ClassType } from '@/lib/types';
 import type { PaymentDetails } from '@/lib/payment';
 import type { Locale } from '@/i18n/routing';
 import { formatPrice } from '@/lib/format';
+import { countries, countryUsesIban } from '@/lib/countries';
 import { Button } from '@/components/ui/Button';
 import { Field, FieldError, Input, Label, Select, Textarea } from '@/components/ui/Field';
 import { CloseIcon, CopyIcon, CheckIcon } from '@/components/ui/Icons';
@@ -20,7 +21,8 @@ interface Props {
   onClose: () => void;
 }
 
-type Errors = Partial<Record<'fullName' | 'email' | 'phone' | 'type', string>>;
+type ErrorKey = 'fullName' | 'email' | 'phone' | 'instagram' | 'country' | 'type';
+type Errors = Partial<Record<ErrorKey, string>>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,8 +37,15 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
   const [errors, setErrors] = useState<Errors>({});
   const [copied, setCopied] = useState(false);
   const [type, setType] = useState<ClassType>(klass.type);
+  const [country, setCountry] = useState('');
 
   const title = localized(klass, 'title', locale);
+  const hasPrice = klass.price != null;
+  const priceLabel = formatPrice(klass.price, klass.currency ?? payment.currency, locale);
+
+  // Turkey with a set price uses the IBAN bank transfer. Everyone else (or any
+  // class with no fixed price) routes to the "Kambiz will contact you" flow.
+  const usesIban = hasPrice && countryUsesIban(country) && !!payment.iban;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +53,7 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
     const fullName = String(form.get('fullName') ?? '').trim();
     const email = String(form.get('email') ?? '').trim();
     const phone = String(form.get('phone') ?? '').trim();
+    const instagram = String(form.get('instagram') ?? '').trim();
     const message = String(form.get('message') ?? '').trim();
     const preferred = String(form.get('preferredType') ?? '') as ClassType;
 
@@ -51,6 +61,8 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
     if (!fullName) next.fullName = t('validation.fullName');
     if (!EMAIL_RE.test(email)) next.email = t('validation.email');
     if (!phone) next.phone = t('validation.phone');
+    if (!instagram) next.instagram = t('validation.instagram');
+    if (!country) next.country = t('validation.country');
     if (preferred !== 'online' && preferred !== 'in_person')
       next.type = t('validation.type');
     setErrors(next);
@@ -64,6 +76,8 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
         full_name: fullName,
         email,
         phone,
+        instagram,
+        country,
         preferred_type: preferred,
         message: message || null,
         status: 'pending',
@@ -84,8 +98,6 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
       /* clipboard unavailable, ignore */
     }
   }
-
-  const priceLabel = formatPrice(klass.price, klass.currency ?? payment.currency, locale);
 
   return (
     <AnimatePresence>
@@ -116,15 +128,24 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
           </button>
 
           {status === 'success' ? (
-            <SuccessPanel
-              title={title}
-              payment={payment}
-              priceLabel={priceLabel}
-              contactEmail={contactEmail}
-              copied={copied}
-              onCopy={copyIban}
-              onDone={onClose}
-            />
+            usesIban ? (
+              <IbanPanel
+                title={title}
+                payment={payment}
+                priceLabel={priceLabel}
+                contactEmail={contactEmail}
+                copied={copied}
+                onCopy={copyIban}
+                onDone={onClose}
+              />
+            ) : (
+              <RequestPanel
+                title={title}
+                priceLabel={priceLabel}
+                contactEmail={contactEmail}
+                onDone={onClose}
+              />
+            )
           ) : (
             <form onSubmit={handleSubmit} noValidate>
               <div className="mb-1 flex gap-2">
@@ -136,13 +157,9 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                 {t('title')}
               </h2>
               <p className="mt-1.5 text-sm text-bone/60">
-                {t('forClass')}: <span className="text-bone">{title}</span>
-                {priceLabel && (
-                  <>
-                    {' '}
-                    · {tc('price')}: <span className="text-bone">{priceLabel}</span>
-                  </>
-                )}
+                {t('forClass')}: <span className="text-bone">{title}</span>{' '}
+                · {tc('price')}:{' '}
+                <span className="text-bone">{priceLabel ?? tc('priceOnRequest')}</span>
               </p>
 
               <div className="mt-6 space-y-4">
@@ -165,6 +182,28 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
                     <Input id="phone" name="phone" type="tel" inputMode="tel"
                       autoComplete="tel" dir="ltr" aria-invalid={!!errors.phone} />
                     <FieldError>{errors.phone}</FieldError>
+                  </Field>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field>
+                    <Label htmlFor="instagram" required>{t('instagram')}</Label>
+                    <Input id="instagram" name="instagram" dir="ltr"
+                      placeholder={t('instagramPlaceholder')}
+                      aria-invalid={!!errors.instagram} />
+                    <FieldError>{errors.instagram}</FieldError>
+                  </Field>
+                  <Field>
+                    <Label htmlFor="country" required>{t('country')}</Label>
+                    <Select id="country" name="country" value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      aria-invalid={!!errors.country}>
+                      <option value="" disabled>{t('countryPlaceholder')}</option>
+                      {countries.map((c) => (
+                        <option key={c.code} value={c.code}>{c[locale]}</option>
+                      ))}
+                    </Select>
+                    <FieldError>{errors.country}</FieldError>
                   </Field>
                 </div>
 
@@ -209,7 +248,8 @@ export function RegistrationDialog({ klass, payment, contactEmail, onClose }: Pr
   );
 }
 
-function SuccessPanel({
+/** Turkey + fixed price: show the IBAN bank-transfer instructions. */
+function IbanPanel({
   title,
   payment,
   priceLabel,
@@ -268,6 +308,48 @@ function SuccessPanel({
 
       <p className="mt-5 rounded-[10px] border border-seam bg-ink p-4 text-sm text-bone/75">
         {t('sendReceipt', { email: contactEmail })}
+      </p>
+
+      <div className="mt-6">
+        <Button onClick={onDone} className="w-full justify-center">
+          {t('done')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Outside Turkey, or no fixed price: Kambiz makes contact to arrange payment. */
+function RequestPanel({
+  title,
+  priceLabel,
+  contactEmail,
+  onDone,
+}: {
+  title: string;
+  priceLabel: string | null;
+  contactEmail: string;
+  onDone: () => void;
+}) {
+  const t = useTranslations('Registration');
+
+  return (
+    <div>
+      <div className="mb-3 grid h-11 w-11 place-items-center rounded-full bg-brick/10 text-brick">
+        <CheckIcon className="h-5 w-5" />
+      </div>
+      <h2 className="text-2xl font-semibold tracking-tightest text-bone">
+        {t('requestTitle')}
+      </h2>
+      <p className="prose-body mt-2 text-bone/75">{t('requestBody')}</p>
+
+      <dl className="mt-6 divide-y divide-seam overflow-hidden rounded-plate bg-plate shadow-snap">
+        <Row label={t('forClass')} value={title} />
+        {priceLabel && <Row label={t('amount')} value={priceLabel} />}
+      </dl>
+
+      <p className="mt-5 rounded-[10px] border border-seam bg-ink p-4 text-sm text-bone/75">
+        {t('requestContact', { email: contactEmail })}
       </p>
 
       <div className="mt-6">

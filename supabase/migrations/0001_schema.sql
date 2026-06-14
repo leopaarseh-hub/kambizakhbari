@@ -51,6 +51,8 @@ create table if not exists public.registrations (
   full_name text not null,
   email text not null,
   phone text not null,
+  instagram text,
+  country text,
   preferred_type class_type not null default 'online',
   message text,
   status registration_status not null default 'pending',

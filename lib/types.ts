@@ -39,6 +39,8 @@ export interface RegistrationRow {
   full_name: string;
   email: string;
   phone: string;
+  instagram: string | null;
+  country: string | null;
   preferred_type: ClassType;
   message: string | null;
   status: RegistrationStatus;
