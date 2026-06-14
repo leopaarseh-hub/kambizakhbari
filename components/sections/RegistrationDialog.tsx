@@ -139,7 +139,7 @@ export function RegistrationDialog({ target, payment, contactEmail, onClose }: P
           exit={reduce ? undefined : { opacity: 0, y: 12, scale: 0.98 }}
           transition={{ duration: 0.32, ease: [0.2, 0.8, 0.2, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-lg rounded-plate bg-ink p-6 shadow-snap-lg sm:p-8"
+          className="relative flex max-h-[90svh] w-full max-w-lg flex-col overflow-y-auto overscroll-contain rounded-plate bg-ink p-6 shadow-snap-lg sm:p-8"
         >
           <button
             onClick={onClose}

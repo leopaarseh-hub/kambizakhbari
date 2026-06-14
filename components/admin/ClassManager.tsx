@@ -204,7 +204,7 @@ function Editor({
       <div className="flex min-h-full items-center justify-center p-4">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-2xl rounded-plate bg-ink p-6 shadow-snap-lg"
+        className="flex max-h-[90svh] w-full max-w-2xl flex-col overflow-y-auto rounded-plate bg-ink p-6 shadow-snap-lg"
       >
         <h2 className="text-xl font-semibold tracking-tightest text-bone">
           {draft.id ? t('edit') : t('new')}
